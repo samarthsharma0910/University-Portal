@@ -1,1 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uni Library Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* same colors */
+        :root{
+            --primary-blue: #1e3a8a;
+            --blue-500: #3b82f6;
+            --blue-100: #dbeafe;
+            --blue-50: #eff6ff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container{
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        header{
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1{
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--blue-500));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle{
+            color: var(--gray-600);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* main cards */
+        .white-card{
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-100);
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-top-bar{
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--blue-500));
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .card-content{
+            padding: 30px;
+        }
+
+        /* fancy search bar */
+        .search-box{
+            position: relative;
+            max-width: 650px;
+            margin: 0 auto 25px auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 4px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 2px solid var(--blue-100);
+        }
+
+        .search-input{
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            border: 2px solid transparent;
+            border-radius: calc(var(--radius) - 4px);
+            font-size: 1.1rem;
+            background: var(--blue-50);
+            position: relative;
+            z-index: 2;
+        }
+
+        .search-input:focus{
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+            transform: translateY(-1px);
+        }
+
+        .search-icon{
+            position: absolute;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--blue-500);
+            font-size: 1.2rem;
+            z-index: 3;
+        }
+
+        /* buttons with blue colors */
+        .quick-buttons{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .btn{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 22px;
+            background: var(--white);
+            border: 2px solid var(--blue-100);
+            border-radius: var(--radius);
+            color: var(--blue-500);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before{
+            left: 100%;
+        }
+
+        .btn:hover{
+            background: var(--blue-500);
+            color: white;
+            border-color: var(--blue-500);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(59,130,246,0.3);
+        }
+
+        /* featured books */
+        .featured-title{
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--gray-900);
+            position: relative;
+        }
+
+        .featured-title::after{
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--blue-500));
+        }
+
+        .books-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card{
+            border: 1px solid var(--gray-100);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .book-card::before{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue-100), var(--blue-500));
+        }
+
+        .book-card:hover{
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+
+        .book-img{
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            background: var(--gray-100);
+        }
+
+        .book-info{
+            padding: 22px;
+        }
+
+        .book-name{
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--gray-900);
+            line-height: 1.3;
+        }
+
+        .book-author{
+            color: var(--gray-600);
+            margin-bottom: 18px;
+            font-size: 0.98rem;
+        }
+
+        .status{
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .available{
+            background: rgba(59,130,246,0.15);
+            color: var(--blue-500);
+            border: 1px solid var(--blue-100);
+        }
+
+        .borrowed{
+            background: rgba(239,68,68,0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+
+        /* stats */
+        .stats{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .stat-card{
+            text-align: center;
+            padding: 30px 25px;
+            border-radius: var(--radius);
+            background: white;
+            border-left: 6px solid var(--blue-500);
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover{
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .stat-num{
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--blue-500));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .stat-text{
+            color: var(--gray-600);
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        /* mobile */
+        @media(max-width: 768px){
+            body{
+                padding: 15px;
+            }
+            
+            h1{
+                font-size: 2.5rem;
+            }
+            
+            .card-content{
+                padding: 25px 20px;
+            }
+            
+            .stats{
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-book-open"></i> University Library</h1>
+            <p class="subtitle">Find books, manage loans and explore 5000+ resources</p>
+        </header>
+
+        <!-- search card -->
+        <div class="white-card">
+            <div class="card-top-bar"></div>
+            <div class="card-content">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search by title, author, ISBN or subject...">
+                </div>
+                
+                <div class="quick-buttons">
+                    <a href="#" class="btn">
+                        <i class="fas fa-calendar-plus"></i> Reserve Book
+                    </a>
+                    <a href="#" class="btn">
+                        <i class="fas fa-list-check"></i> My Books
+                    </a>
+                    <a href="#" class="btn">
+                        <i class="fas fa-qrcode"></i> Scan ISBN
+                    </a>
+                    <a href="#" class="btn">
+                        <i class="fas fa-download"></i> E-Books
+                    </a>
+                    <a href="#" class="btn">
+                        <i class="fas fa-history"></i> Return Book
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- books card - GROKKING ALGORITHMS NEW IMAGE -->
+        <div class="white-card">
+            <div class="card-top-bar"></div>
+            <div class="card-content">
+                <h2 class="featured-title">Featured Books</h2>
+                <div class="books-grid">
+                    <!-- Book 1: Clean Code -->
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&h=220&fit=crop" alt="Clean Code" class="book-img" loading="lazy">
+                        <div class="book-info">
+                            <h3 class="book-name">Clean Code</h3>
+                            <p class="book-author">Robert C. Martin</p>
+                            <span class="status available"><i class="fas fa-check-circle"></i> Available</span>
+                        </div>
+                    </div>
+
+                    <!-- Book 2: Pragmatic Programmer -->
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&h=220&fit=crop" alt="Pragmatic Programmer" class="book-img" loading="lazy">
+                        <div class="book-info">
+                            <h3 class="book-name">Pragmatic Programmer</h3>
+                            <p class="book-author">David Thomas</p>
+                            <span class="status borrowed"><i class="fas fa-user"></i> Borrowed</span>
+                        </div>
+                    </div>
+
+                    <!-- Book 3: Data Intensive Apps -->
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=220&fit=crop" alt="Data Intensive Apps" class="book-img" loading="lazy">
+                        <div class="book-info">
+                            <h3 class="book-name">Data Intensive Apps</h3>
+                            <p class="book-author">Martin Kleppmann</p>
+                            <span class="status available"><i class="fas fa-check-circle"></i> Available</span>
+                        </div>
+                    </div>
+
+                    <!-- Book 4: Python Crash Course -->
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=220&fit=crop" alt="Python Crash Course" class="book-img" loading="lazy">
+                        <div class="book-info">
+                            <h3 class="book-name">Python Crash Course</h3>
+                            <p class="book-author">Eric Matthes</p>
+                            <span class="status available"><i class="fas fa-check-circle"></i> Available</span>
+                        </div>
+                    </div>
+
+                    <!-- Book 5: System Design Interview -->
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=220&fit=crop" alt="System Design Interview" class="book-img" loading="lazy">
+                        <div class="book-info">
+                            <h3 class="book-name">System Design Interview</h3>
+                            <p class="book-author">Alex Xu</p>
+                            <span class="status borrowed"><i class="fas fa-user"></i> Borrowed</span>
+                        </div>
+                    </div>
+
+                    <!-- Book 6: Refactoring -->
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=300&h=220&fit=crop" alt="Refactoring" class="book-img" loading="lazy">
+                        <div class="book-info">
+                            <h3 class="book-name">Refactoring</h3>
+                            <p class="book-author">Martin Fowler</p>
+                            <span class="status available"><i class="fas fa-check-circle"></i> Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-num">5,247</span>
+                <div class="stat-text">Books Available</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">1,892</span>
+                <div class="stat-text">Active Students</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">342</span>
+                <div class="stat-text">New Books</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">24/7</span>
+                <div class="stat-text">Digital Access</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // simple search
+        const searchBox = document.querySelector('.search-input');
+        searchBox.addEventListener('input', function(){
+            console.log('searching: ' + this.value);
+        });
+
+        // all buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
+                alert('Button clicked: ' + this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>
 
