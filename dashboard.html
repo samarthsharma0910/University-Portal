@@ -6,21 +6,28 @@
   <title>KRMU – Student Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- [web:40][web:42] -->
+
   <style>
     :root {
-      --blue: #0b63e5;
-      --blue-dark: #0747a6;
+      --blue: #1a73e8;
+      --blue-dark: #0d47a1;
       --yellow: #ffb020;
-      --bg: #f4f7fb;
+      --bg: #f5f7fa;
       --card-bg: #ffffff;
       --text-main: #1f2933;
-      --text-muted: #7b8794;
+      --text-muted: #5f6368;
       --radius-lg: 18px;
       --radius-md: 12px;
       --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
       --shadow-light: 0 10px 25px rgba(15, 23, 42, 0.04);
       --border-subtle: 1px solid rgba(203, 213, 225, 0.9);
-      --transition-fast: 0.18s ease-out;
       --task-done-bg: #e3f9e5;
       --task-done-text: #047857;
     }
@@ -41,33 +48,36 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, sans-serif;
-      background: var(--bg);
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont,
+        'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
       color: var(--text-main);
       min-height: 100vh;
-      display: block;
-
     }
 
     .layout {
       display: flex;
       width: 100%;
       min-height: 100vh;
-      /* stretch full height */
     }
 
-
-    /* Sidebar */
+    /* Sidebar – glass blue */
     .sidebar {
       width: 250px;
-      background: var(--blue);
-      color: #f9fafb;
       padding: 24px 18px;
       display: flex;
       flex-direction: column;
       gap: 28px;
       flex-shrink: 0;
+
+      background: linear-gradient(180deg,
+          rgba(26, 115, 232, 0.55),
+          rgba(13, 71, 161, 0.65));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 8px 0 30px rgba(13, 71, 161, 0.35);
+      color: #f9fafb;
     }
 
     .sidebar-header {
@@ -80,7 +90,7 @@
       width: 40px;
       height: 40px;
       border-radius: 12px;
-      background: #ffd25f;
+      background: #e8f0fe;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -93,13 +103,14 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
+      color: #ffffff;
     }
 
     .sidebar-title span:first-child {
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      opacity: 0.8;
+      opacity: 0.9;
     }
 
     .sidebar-title span:last-child {
@@ -122,47 +133,55 @@
       border-radius: 999px;
       cursor: pointer;
       font-size: 14px;
-      color: #e5e7eb;
-      transition: var(--transition-fast);
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.12);
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: 0.18s ease-out;
     }
 
     .nav-item.active {
       background: #ffffff;
       color: var(--blue-dark);
-      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+      box-shadow: 0 10px 22px rgba(13, 71, 161, 0.3);
     }
 
     .nav-item:not(.active):hover {
-      background: rgba(15, 23, 42, 0.12);
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateX(6px);
+      box-shadow: 0 6px 18px rgba(255, 255, 255, 0.2);
     }
 
     .nav-icon {
       width: 30px;
       height: 30px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.16);
+      background: rgba(255, 255, 255, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
+      color: #ffffff;
     }
 
     .sidebar-footer {
       margin-top: auto;
       font-size: 12px;
-      opacity: 0.85;
+      opacity: 0.9;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding-top: 14px;
-      border-top: 1px solid rgba(15, 23, 42, 0.24);
+      border-top: 1px solid rgba(255, 255, 255, 0.35);
+      color: #e3f2fd;
     }
 
     .semester-bar {
       flex: 1;
       height: 6px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.3);
+      background: rgba(15, 23, 42, 0.4);
       overflow: hidden;
       margin-left: 8px;
     }
@@ -170,7 +189,7 @@
     .semester-bar-fill {
       width: 65%;
       height: 100%;
-      background: #ffd25f;
+      background: #ffb020;
     }
 
     /* Main */
@@ -197,17 +216,28 @@
     .search-input {
       width: 100%;
       border-radius: 999px;
-      border: none;
+      border: 2px solid #e0e0e0;
       padding: 11px 14px 11px 42px;
       font-size: 13px;
       background: #ffffff;
-      box-shadow: var(--shadow-light);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
       color: var(--text-main);
       outline: none;
+      font-family: 'Roboto', sans-serif;
       background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b8794' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='11' cy='11' r='6'/%3E%3Cline x1='16.5' y1='16.5' x2='21' y2='21'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: 16px center;
       background-size: 16px;
+      transition: box-shadow 0.16s ease-out, border-color 0.16s ease-out;
+    }
+
+    .search-input:hover {
+      box-shadow: 0 12px 32px rgba(148, 163, 184, 0.35);
+    }
+
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
     }
 
     .top-right {
@@ -235,12 +265,12 @@
       width: 34px;
       height: 34px;
       border-radius: 999px;
-      background: #ffd25f;
+      background: #e8f0fe;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
-      color: #1f2933;
+      color: var(--blue-dark);
     }
 
     .content {
@@ -253,9 +283,15 @@
     .card {
       background: var(--card-bg);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-soft);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
       padding: 18px 20px;
       border: var(--border-subtle);
+      transition: transform 0.16s ease-out, box-shadow 0.16s ease-out;
+    }
+
+    .card:hover {
+      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+      transform: translateY(-1px);
     }
 
     /* Profile hero */
@@ -264,24 +300,31 @@
       grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.5fr);
       gap: 18px;
       align-items: center;
-      padding: 18px 22px;
+      padding: 20px 22px;
+      background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 60%, #e3f2fd 100%);
+      color: #ffffff;
     }
 
     .profile-text-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
       margin-bottom: 6px;
     }
 
     .profile-text-body {
       font-size: 13px;
-      color: var(--text-muted);
+      color: #e3f2fd;
       margin-bottom: 10px;
     }
 
-    .profile-highlight {
-      font-weight: 600;
-      color: var(--blue-dark);
+    .profile-illustration {
+      height: 120px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #e8f0fe, #bbdefb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
     }
 
     .primary-btn {
@@ -290,35 +333,27 @@
       justify-content: center;
       border-radius: 999px;
       border: none;
-      background: var(--yellow);
-      color: #1f2933;
+      background: linear-gradient(to right, #1a73e8, #0d47a1);
+      color: #ffffff;
       font-size: 13px;
       font-weight: 600;
       padding: 9px 18px;
       cursor: pointer;
-      box-shadow: 0 10px 22px rgba(249, 115, 22, 0.25);
-      transition: var(--transition-fast);
+      box-shadow: 0 10px 22px rgba(26, 115, 232, 0.35);
+      transition: transform 0.18s ease-out, box-shadow 0.18s ease-out,
+        filter 0.18s ease-out;
     }
 
     .primary-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 26px rgba(249, 115, 22, 0.3);
-    }
-
-    .profile-illustration {
-      height: 120px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, #f0f5ff, #e3f2ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
+      box-shadow: 0 12px 26px rgba(13, 71, 161, 0.4);
     }
 
     .section-title {
       font-size: 15px;
       font-weight: 600;
       margin-bottom: 10px;
+      color: var(--blue-dark);
     }
 
     .section-header-row {
@@ -364,6 +399,10 @@
       background: #f9fafb;
     }
 
+    .timetable tbody tr:hover {
+      background: #e8f0fe;
+    }
+
     /* For You cards */
     .lesson-row {
       display: grid;
@@ -380,6 +419,8 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      cursor: pointer;
+      transition: transform 0.16s ease-out, filter 0.16s ease-out;
     }
 
     .lesson-card.yellow {
@@ -391,7 +432,12 @@
     }
 
     .lesson-card.blue {
-      background: #1d9bf0;
+      background: #1a73e8;
+    }
+
+    .lesson-card:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
     }
 
     .lesson-label {
@@ -404,23 +450,25 @@
       font-weight: 600;
     }
 
-    /* Right column */
     .right-column {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
+    /* Calendar */
     .calendar-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
       font-size: 13px;
+      color: var(--text-muted);
     }
 
     .calendar-month-label {
       font-weight: 600;
+      color: var(--blue-dark);
     }
 
     .calendar-grid {
@@ -445,6 +493,7 @@
       color: #ffffff;
     }
 
+    /* Tasks */
     .tasks-list {
       display: flex;
       flex-direction: column;
@@ -460,11 +509,11 @@
       padding: 6px 8px;
       border-radius: 10px;
       cursor: pointer;
-      transition: var(--transition-fast);
+      transition: 0.16s ease-out;
     }
 
     .task-item:hover {
-      background: #f3f4ff;
+      background: #e8f0fe;
     }
 
     .task-item.done {
@@ -524,9 +573,15 @@
       font-size: 12px;
       cursor: pointer;
       font-weight: 500;
+      transition: 0.16s ease-out;
     }
 
-    /* Simple full-screen overlay form */
+    .secondary-btn:hover {
+      background: #e8f0fe;
+      transform: translateY(-1px);
+    }
+
+    /* Overlay form for profile */
     .overlay {
       position: fixed;
       inset: 0;
@@ -572,14 +627,16 @@
       width: 100%;
       padding: 8px 10px;
       border-radius: 8px;
-      border: 1px solid rgba(148, 163, 184, 0.9);
+      border: 2px solid #e0e0e0;
       font-size: 13px;
       outline: none;
+      font-family: 'Roboto', sans-serif;
+      transition: border-color 0.16s ease-out, box-shadow 0.16s ease-out;
     }
 
     .form-group input:focus {
       border-color: var(--blue);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35);
     }
 
     .error-text {
@@ -595,6 +652,147 @@
       justify-content: flex-end;
     }
 
+    /* Blur wrapper for modals */
+    #blurWrapper {
+      transition: filter 0.2s ease, opacity 0.2s ease;
+    }
+
+    #blurWrapper.blurred {
+      filter: blur(4px);
+      opacity: 0.7;
+    }
+
+    /* Dashboard modals */
+    .dash-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .dash-modal.open {
+      display: flex;
+    }
+
+    .dash-modal-card {
+      background: #ffffff;
+      border-radius: 18px;
+      max-width: 640px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+      overflow: hidden;
+      animation: dashModalIn 0.24s ease-out;
+    }
+
+    .attendance-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .attendance-tab {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      background: #e5e7eb;
+      color: #374151;
+      transition: background 0.16s ease-out, color 0.16s ease-out;
+    }
+
+    .attendance-tab.active {
+      background: #1a73e8;
+      color: #ffffff;
+    }
+
+
+    @keyframes dashModalIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .dash-modal-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #1a73e8, #0d47a1);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-modal-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .dash-modal-close {
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .dash-modal-body {
+      padding: 18px 20px 20px;
+    }
+
+    .dash-modal-section {
+      margin-bottom: 16px;
+    }
+
+    .dash-modal-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #0d47a1;
+    }
+
+    .dash-modal-section p {
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .dash-list {
+      list-style: none;
+      padding-left: 0;
+      font-size: 13px;
+      color: #4b5563;
+    }
+
+    .dash-list li+li {
+      margin-top: 4px;
+    }
+
+    .dash-modal canvas {
+      width: 100% !important;
+    }
+
+    /* Transitions */
+    .card,
+    .lesson-card,
+    .task-item,
+    .primary-btn,
+    .secondary-btn,
+    .nav-item,
+    .search-input {
+      transition: transform 0.16s ease-out, box-shadow 0.16s ease-out,
+        background-color 0.16s ease-out, filter 0.16s ease-out;
+    }
+
+    /* Responsive */
     @media (max-width: 1040px) {
       .layout {
         flex-direction: column;
@@ -605,6 +803,7 @@
         align-items: center;
         width: 100%;
         overflow-x: auto;
+        border-radius: 0;
       }
 
       .nav {
@@ -640,263 +839,212 @@
         justify-content: space-between;
       }
     }
-
-    /* Sidebar hover already exists; enhance a bit */
-    .nav-item {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .nav-item:not(.active):hover {
-      background: rgba(15, 23, 42, 0.16);
-      transform: translateY(-1px);
-    }
-
-    /* Cards */
-    .card:hover {
-      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
-      transform: translateY(-1px);
-    }
-
-    /* Mini timetable rows */
-    .timetable tbody tr:hover {
-      background: #eef3ff;
-    }
-
-    /* For You cards */
-    .lesson-card:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-    }
-
-    /* Tasks hover is already present; make checkbox change */
-    .task-item:hover .task-checkbox {
-      border-color: var(--blue);
-    }
-
-    /* Buttons */
-    .primary-btn:hover,
-    .secondary-btn:hover {
-      filter: brightness(1.03);
-    }
-
-    /* Search input focus/hover */
-    .search-input:hover {
-      box-shadow: 0 12px 28px rgba(148, 163, 184, 0.35);
-    }
-
-    .search-input:focus {
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35);
-    }
-
-    .card,
-    .lesson-card,
-    .task-item,
-    .primary-btn,
-    .secondary-btn,
-    .nav-item,
-    .search-input {
-      transition: transform 0.16s ease-out, box-shadow 0.16s ease-out,
-        background-color 0.16s ease-out, filter 0.16s ease-out;
-    }
   </style>
 </head>
 
 <body>
-  <div class="layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">K</div>
-        <div class="sidebar-title">
-          <span>KRMU</span>
-          <span>Student Portal</span>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <a class="nav-item active" data-section="hostel" href="dashboard.html">
-          <div class="nav-icon">🏠</div>
-          <span>Hostel</span>
-        </a>
-
-        <a class="nav-item" data-section="mentor" href="#mentor">
-          <div class="nav-icon">👨‍🏫</div>
-          <span>Mentor</span>
-        </a>
-
-        <a class="nav-item" data-section="library" href="Library.html">
-          <div class="nav-icon">📚</div>
-          <span>Library</span>
-        </a>
-
-        <a class="nav-item" data-section="pyq" href="Pyqs.html">
-          <div class="nav-icon">📝</div>
-          <span>Pyq</span>
-        </a>
-
-        <a class="nav-item" data-section="courses" href="#courses">
-          <div class="nav-icon">🎓</div>
-          <span>Courses</span>
-        </a>
-
-        <a class="nav-item" data-section="alumni" href="#alumni">
-          <div class="nav-icon">🤝</div>
-          <span>Alumni contact</span>
-        </a>
-
-        <a class="nav-item" data-section="fee" href="#fee">
-          <div class="nav-icon">💳</div>
-          <span>Fee</span>
-        </a>
-
-        <a class="nav-item" data-section="transport" href="#transport">
-          <div class="nav-icon">🚌</div>
-          <span>Transport route</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <span>Semester 2 of 3</span>
-        <div class="semester-bar">
-          <div class="semester-bar-fill"></div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main class="main">
-      <!-- Top bar -->
-      <header class="top-bar">
-        <div class="search-wrapper">
-          <input type="text" class="search-input" placeholder="What do you want to learn today?" />
-        </div>
-        <div class="top-right">
-          <span id="dateLabel">Date</span>
-          <div class="avatar-pill">
-            <span id="topUserName">Student</span>
-            <div class="avatar" id="topAvatar">ST</div>
+  <!-- Blur wrapper around entire dashboard -->
+  <div id="blurWrapper">
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">K</div>
+          <div class="sidebar-title">
+            <span>KRMU</span>
+            <span>Student Portal</span>
           </div>
         </div>
-      </header>
 
-      <div class="content">
-        <!-- Center column -->
-        <div>
-          <!-- Profile hero -->
-          <section class="card profile-card">
-            <div>
-              <div class="profile-text-title">Your Profile</div>
-              <p class="profile-text-body" id="profileIntro">
-                Hi Student, welcome to KRMU dashboard.
-              </p>
-              <p class="profile-text-body" id="profileDetails">
-                Email: -, Mobile: -, Course: -.
-              </p>
-              <button class="primary-btn" id="editProfileBtn">Edit Profile</button>
-            </div>
-            <div class="profile-illustration">🎓</div>
-          </section>
+        <nav class="nav">
+          <a class="nav-item active" data-section="hostel" href="dashboard.html">
+            <div class="nav-icon">🏠</div>
+            <span>Hostel</span>
+          </a>
 
-          <!-- Timetable -->
-          <section style="margin-top: 18px;" class="card">
-            <div class="section-header-row">
-              <div class="section-title">Time Table</div>
-              <div class="section-link">View More</div>
-            </div>
+          <a class="nav-item" data-section="mentor" href="#mentor">
+            <div class="nav-icon">👨‍🏫</div>
+            <span>Mentor</span>
+          </a>
 
-            <table class="timetable">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Subject</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>09:00 – 10:00</td>
-                  <td>Web Dev‑2</td>
-                </tr>
-                <tr>
-                  <td>10:00 – 11:00</td>
-                  <td>Computational Mathematics‑2</td>
-                </tr>
-                <tr>
-                  <td>11:15 – 12:15</td>
-                  <td>Data Structures</td>
-                </tr>
-                <tr>
-                  <td>12:15 – 01:15</td>
-                  <td>Design Thinking and Prototyping</td>
-                </tr>
-                <tr>
-                  <td>02:00 – 03:00</td>
-                  <td>Engineering Physics</td>
-                </tr>
-                <tr>
-                  <td>03:00 – 04:00</td>
-                  <td>Minor Project</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+          <a class="nav-item" data-section="library" href="Library.html">
+            <div class="nav-icon">📚</div>
+            <span>Library</span>
+          </a>
 
-          <!-- For You -->
-          <section style="margin-top: 18px;">
-            <div class="section-header-row">
-              <div class="section-title">For You</div>
-              <div class="section-link">View More</div>
-            </div>
-            <div class="lesson-row">
-              <div class="lesson-card yellow">
-                <div class="lesson-label">Attendance</div>
-                <div class="lesson-title">Attendance Summary</div>
-              </div>
-              <div class="lesson-card pink">
-                <div class="lesson-label">Academics</div>
-                <div class="lesson-title">Report Card</div>
-              </div>
-              <div class="lesson-card blue">
-                <div class="lesson-label">Performance</div>
-                <div class="lesson-title">Overall Performance</div>
-              </div>
-            </div>
-          </section>
+          <a class="nav-item" data-section="pyq" href="Pyqs.html">
+            <div class="nav-icon">📝</div>
+            <span>Pyq</span>
+          </a>
+
+          <a class="nav-item" data-section="courses" href="#courses">
+            <div class="nav-icon">🎓</div>
+            <span>Courses</span>
+          </a>
+
+          <a class="nav-item" data-section="alumni" href="#alumni">
+            <div class="nav-icon">🤝</div>
+            <span>Alumni contact</span>
+          </a>
+
+          <a class="nav-item" data-section="fee" href="fee.html">
+            <div class="nav-icon">💳</div>
+            <span>Fee</span>
+          </a>
+
+          <a class="nav-item" data-section="transport" href="#transport">
+            <div class="nav-icon">🚌</div>
+            <span>Transport route</span>
+          </a>
+
+          <a class="nav-item" data-section="hostel" href="hostel.html">
+            <div class="nav-icon">🏠</div>
+            <span>Hostel</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <span>Semester 2 of 3</span>
+          <div class="semester-bar">
+            <div class="semester-bar-fill"></div>
+          </div>
         </div>
+      </aside>
 
-        <!-- Right column -->
-        <div class="right-column">
-          <!-- Calendar -->
-          <section class="card">
-            <div class="calendar-top">
-              <span class="calendar-month-label" id="calendarMonthLabel">Month</span>
-              <span id="calendarTodayText">Today</span>
+      <!-- Main -->
+      <main class="main">
+        <!-- Top bar -->
+        <header class="top-bar">
+          <div class="search-wrapper">
+            <input type="text" class="search-input" placeholder="What do you want to learn today?" />
+          </div>
+          <div class="top-right">
+            <span id="dateLabel">Date</span>
+            <div class="avatar-pill">
+              <span id="topUserName">Student</span>
+              <div class="avatar" id="topAvatar">ST</div>
             </div>
-            <div class="calendar-grid" id="calendarGrid"></div>
-          </section>
+          </div>
+        </header>
 
-          <!-- Tasks -->
-          <section class="card" id="tasksCard">
-            <div class="section-title">Your Tasks Today</div>
-            <div class="tasks-list" id="tasksList">
-              <!-- tasks will be injected -->
-            </div>
-            <button class="secondary-btn" id="resetTasksBtn">Reset tasks</button>
-          </section>
+        <div class="content">
+          <!-- Center column -->
+          <div>
+            <!-- Profile hero -->
+            <section class="card profile-card">
+              <div>
+                <div class="profile-text-title">Your Profile</div>
+                <p class="profile-text-body" id="profileIntro">
+                  Hi Student, welcome to KRMU dashboard.
+                </p>
+                <p class="profile-text-body" id="profileDetails">
+                  Email: -, Mobile: -, Course: -.
+                </p>
+                <button class="primary-btn" id="editProfileBtn">Edit Profile</button>
+              </div>
+              <div class="profile-illustration">🎓</div>
+            </section>
 
-          <!-- Refer card -->
-          <section class="card">
-            <div class="section-title">Refer a friend</div>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-              Invite your friends to join KRMU portal and track their progress together.
-            </p>
-          </section>
+            <!-- Timetable -->
+            <section style="margin-top: 18px;" class="card">
+              <div class="section-header-row">
+                <div class="section-title">Time Table</div>
+                <div class="section-link">View More</div>
+              </div>
+
+              <table class="timetable">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Subject</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>09:00 – 10:00</td>
+                    <td>Web Dev‑2</td>
+                  </tr>
+                  <tr>
+                    <td>10:00 – 11:00</td>
+                    <td>Computational Mathematics‑2</td>
+                  </tr>
+                  <tr>
+                    <td>11:15 – 12:15</td>
+                    <td>Data Structures</td>
+                  </tr>
+                  <tr>
+                    <td>12:15 – 01:15</td>
+                    <td>Design Thinking and Prototyping</td>
+                  </tr>
+                  <tr>
+                    <td>02:00 – 03:00</td>
+                    <td>Engineering Physics</td>
+                  </tr>
+                  <tr>
+                    <td>03:00 – 04:00</td>
+                    <td>Minor Project</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <!-- For You -->
+            <section style="margin-top: 18px;">
+              <div class="section-header-row">
+                <div class="section-title">For You</div>
+                <div class="section-link">View More</div>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-card yellow">
+                  <div class="lesson-label">Attendance</div>
+                  <div class="lesson-title">Attendance Summary</div>
+                </div>
+                <div class="lesson-card pink">
+                  <div class="lesson-label">Academics</div>
+                  <div class="lesson-title">Report Card</div>
+                </div>
+                <div class="lesson-card blue">
+                  <div class="lesson-label">Performance</div>
+                  <div class="lesson-title">Overall Performance</div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right column -->
+          <div class="right-column">
+            <!-- Calendar -->
+            <section class="card">
+              <div class="calendar-top">
+                <span class="calendar-month-label" id="calendarMonthLabel">Month</span>
+                <span id="calendarTodayText">Today</span>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </section>
+
+            <!-- Tasks -->
+            <section class="card" id="tasksCard">
+              <div class="section-title">Your Tasks Today</div>
+              <div class="tasks-list" id="tasksList">
+                <!-- tasks will be injected -->
+              </div>
+              <button class="secondary-btn" id="resetTasksBtn">Reset tasks</button>
+            </section>
+
+            <!-- Refer card -->
+            <section class="card">
+              <div class="section-title">Refer a friend</div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                Invite your friends to join KRMU portal and track their progress together.
+              </p>
+            </section>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
 
-  <!-- Overlay for first‑time login / edit -->
+  <!-- Profile overlay -->
   <div class="overlay" id="profileOverlay" style="display:none;">
     <div class="overlay-card">
       <div class="overlay-title">Create your KRMU account</div>
@@ -928,11 +1076,162 @@
     </div>
   </div>
 
+  <div class="dash-modal" id="attendanceModal">
+    <div class="dash-modal-card">
+      <div class="dash-modal-header">
+        <h2>Attendance Summary</h2>
+        <button class="dash-modal-close" data-close-modal="attendanceModal">✕</button>
+      </div>
+      <div class="dash-modal-body">
+        <!-- Tabs -->
+        <div class="attendance-tabs">
+          <button class="attendance-tab active" data-att-tab="overall">Overall</button>
+          <button class="attendance-tab" data-att-tab="mon">Mon</button>
+          <button class="attendance-tab" data-att-tab="tue">Tue</button>
+          <button class="attendance-tab" data-att-tab="wed">Wed</button>
+          <button class="attendance-tab" data-att-tab="thu">Thu</button>
+          <button class="attendance-tab" data-att-tab="fri">Fri</button>
+        </div>
+
+        <!-- Overall summary -->
+        <div class="attendance-panel" data-att-panel="overall">
+          <div class="dash-modal-section">
+            <h3>Overall Attendance</h3>
+            <p><strong>Overall:</strong> 88%</p>
+            <p><strong>Present days:</strong> 110 / 125</p>
+          </div>
+        </div>
+
+        <!-- Day wise panels (static sample) -->
+        <div class="attendance-panel" data-att-panel="mon" style="display:none;">
+          <div class="dash-modal-section">
+            <h3>Monday</h3>
+            <ul class="dash-list">
+              <li>09:00 – 10:00 · Web Dev‑2 · Present</li>
+              <li>10:00 – 11:00 · Computational Mathematics‑2 · Present</li>
+              <li>11:15 – 12:15 · Data Structures · Absent</li>
+              <li>12:15 – 01:15 · Design Thinking and Prototyping · Present</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="attendance-panel" data-att-panel="tue" style="display:none;">
+          <div class="dash-modal-section">
+            <h3>Tuesday</h3>
+            <ul class="dash-list">
+              <li>09:00 – 10:00 · Web Dev‑2 · Present</li>
+              <li>11:15 – 12:15 · Data Structures · Present</li>
+              <li>02:00 – 03:00 · Engineering Physics · Present</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="attendance-panel" data-att-panel="wed" style="display:none;">
+          <div class="dash-modal-section">
+            <h3>Wednesday</h3>
+            <ul class="dash-list">
+              <li>10:00 – 11:00 · Computational Mathematics‑2 · Present</li>
+              <li>12:15 – 01:15 · Design Thinking and Prototyping · Present</li>
+              <li>03:00 – 04:00 · Minor Project · Present</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="attendance-panel" data-att-panel="thu" style="display:none;">
+          <div class="dash-modal-section">
+            <h3>Thursday</h3>
+            <ul class="dash-list">
+              <li>09:00 – 10:00 · Web Dev‑2 · Absent</li>
+              <li>11:15 – 12:15 · Data Structures · Present</li>
+              <li>02:00 – 03:00 · Engineering Physics · Present</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="attendance-panel" data-att-panel="fri" style="display:none;">
+          <div class="dash-modal-section">
+            <h3>Friday</h3>
+            <ul class="dash-list">
+              <li>10:00 – 11:00 · Computational Mathematics‑2 · Present</li>
+              <li>12:15 – 01:15 · Design Thinking and Prototyping · Present</li>
+              <li>03:00 – 04:00 · Minor Project · Present</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Card Modal -->
+  <div class="dash-modal" id="reportCardModal">
+    <div class="dash-modal-card">
+      <div class="dash-modal-header">
+        <h2>Report Card</h2>
+        <button class="dash-modal-close" data-close-modal="reportCardModal">✕</button>
+      </div>
+      <div class="dash-modal-body">
+        <div class="dash-modal-section">
+          <h3>Semester Grades</h3>
+          <canvas id="reportCardChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overall Performance Modal -->
+  <div class="dash-modal" id="overallPerfModal">
+    <div class="dash-modal-card">
+      <div class="dash-modal-header">
+        <h2>Overall Performance</h2>
+        <button class="dash-modal-close" data-close-modal="overallPerfModal">✕</button>
+      </div>
+      <div class="dash-modal-body">
+        <div class="dash-modal-section">
+          <h3>Weekly Performance</h3>
+          <canvas id="overallPerfChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Keys for localStorage
     const LS_PROFILE_KEY = "krmu_profile";
     const LS_TASKS_KEY = "krmu_tasks";
     const LS_CSV_KEY = "krmu_students_csv";
+
+
+    // Weekday timetable mapping (static demo data)
+    const WEEK_SCHEDULE = {
+      mon: [
+        { time: "09:00 – 10:00", subject: "Web Dev‑2" },
+        { time: "10:00 – 11:00", subject: "Computational Mathematics‑2" },
+        { time: "11:15 – 12:15", subject: "Data Structures" },
+        { time: "12:15 – 01:15", subject: "Design Thinking and Prototyping" },
+        { time: "02:00 – 03:00", subject: "Engineering Physics" },
+        { time: "03:00 – 04:00", subject: "Minor Project" }
+      ],
+      tue: [
+        { time: "09:00 – 10:00", subject: "Web Dev‑2" },
+        { time: "11:15 – 12:15", subject: "Data Structures" },
+        { time: "02:00 – 03:00", subject: "Engineering Physics" }
+      ],
+      wed: [
+        { time: "10:00 – 11:00", subject: "Computational Mathematics‑2" },
+        { time: "12:15 – 01:15", subject: "Design Thinking and Prototyping" },
+        { time: "03:00 – 04:00", subject: "Minor Project" }
+      ],
+      thu: [
+        { time: "09:00 – 10:00", subject: "Web Dev‑2" },
+        { time: "11:15 – 12:15", subject: "Data Structures" },
+        { time: "02:00 – 03:00", subject: "Engineering Physics" }
+      ],
+      fri: [
+        { time: "10:00 – 11:00", subject: "Computational Mathematics‑2" },
+        { time: "12:15 – 01:15", subject: "Design Thinking and Prototyping" },
+        { time: "03:00 – 04:00", subject: "Minor Project" }
+      ]
+    };
 
     const dateLabel = document.getElementById("dateLabel");
     const topUserName = document.getElementById("topUserName");
@@ -955,6 +1254,13 @@
     const tasksList = document.getElementById("tasksList");
     const resetTasksBtn = document.getElementById("resetTasksBtn");
 
+    const blurWrapper = document.getElementById("blurWrapper");
+
+    // For You cards (modals)
+    const attendanceCard = document.querySelector(".lesson-card.yellow");
+    const reportCardCard = document.querySelector(".lesson-card.pink");
+    const overallPerfCard = document.querySelector(".lesson-card.blue");
+
     // --- Helpers ---
     function getTodayId() {
       const d = new Date();
@@ -967,11 +1273,31 @@
       dateLabel.textContent = now.toLocaleDateString(undefined, options);
     }
 
+    function renderTimetableForDay(weekdayKey) {
+      const body = document.querySelector(".timetable tbody");
+      const data = WEEK_SCHEDULE[weekdayKey];
+
+      if (!body || !data) return;
+
+      body.innerHTML = "";
+      data.forEach(slot => {
+        const tr = document.createElement("tr");
+        const tdTime = document.createElement("td");
+        const tdSub = document.createElement("td");
+        tdTime.textContent = slot.time;
+        tdSub.textContent = slot.subject;
+        tr.appendChild(tdTime);
+        tr.appendChild(tdSub);
+        body.appendChild(tr);
+      });
+    }
+
+
     // Live calendar
     function buildCalendar() {
       const now = new Date();
       const year = now.getFullYear();
-      const month = now.getMonth(); // 0‑based
+      const month = now.getMonth();
       const todayDate = now.getDate();
 
       const monthName = now.toLocaleDateString(undefined, {
@@ -989,14 +1315,8 @@
 
       calendarGrid.innerHTML = "";
 
-      const firstDay = new Date(year, month, 1).getDay(); // 0‑6
+      const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      // Leading blanks
-      for (let i = 0; i < firstDay; i++) {
-        const div = document.createElement("div");
-        calendarGrid.appendChild(div);
-      }
 
       for (let day = 1; day <= daysInMonth; day++) {
         const div = document.createElement("div");
@@ -1005,8 +1325,50 @@
           div.classList.add("active");
         }
         div.textContent = day;
+
+        // Attach weekday info
+        const dateObj = new Date(year, month, day);
+        const jsDay = dateObj.getDay(); // 0=Sun ... 6=Sat
+        const dayMap = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
+        const weekdayKey = dayMap[jsDay] || null;
+
+        if (weekdayKey) {
+          div.style.cursor = "pointer";
+          div.addEventListener("click", () => {
+            // Update timetable to that day's schedule
+            renderTimetableForDay(weekdayKey);
+
+            // If attendance modal is currently open, switch to that day tab
+            const attendanceModal = document.getElementById("attendanceModal");
+            if (attendanceModal.classList.contains("open")) {
+              // Trigger the tab change
+              const targetTab = document.querySelector(
+                '.attendance-tab[data-att-tab="' + weekdayKey + '"]'
+              );
+              const targetPanelKey = weekdayKey;
+
+              if (targetTab) {
+                // update tabs
+                document
+                  .querySelectorAll(".attendance-tab")
+                  .forEach(t => t.classList.remove("active"));
+                targetTab.classList.add("active");
+
+                // update panels
+                document
+                  .querySelectorAll(".attendance-panel")
+                  .forEach(panel => {
+                    panel.style.display =
+                      panel.dataset.attPanel === targetPanelKey ? "block" : "none";
+                  });
+              }
+            }
+          });
+        }
+
         calendarGrid.appendChild(div);
       }
+
     }
 
     // Profile / account
@@ -1056,7 +1418,6 @@
           .join(",") + "\n";
       csv += row;
       localStorage.setItem(LS_CSV_KEY, csv);
-      // From here you could send csv to a backend via fetch() in a real app.
     }
 
     profileForm.addEventListener("submit", function (e) {
@@ -1094,12 +1455,11 @@
 
     // Nav active state
     document.querySelectorAll(".nav-item").forEach((item) => {
-      item.addEventListener("click", (e) => {
+      item.addEventListener("click", () => {
         document
           .querySelectorAll(".nav-item")
           .forEach((el) => el.classList.remove("active"));
         item.classList.add("active");
-        // In a real app, you'd show/hide sections or navigate here.
       });
     });
 
@@ -1178,11 +1538,134 @@
       renderTasks(tasksState[todayId]);
     });
 
+    // Modals + blur
+    function openModal(id) {
+      document.getElementById(id).classList.add("open");
+      blurWrapper.classList.add("blurred");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+      blurWrapper.classList.remove("blurred");
+    }
+
+    attendanceCard.addEventListener("click", () => openModal("attendanceModal"));
+    reportCardCard.addEventListener("click", () => openModal("reportCardModal"));
+    overallPerfCard.addEventListener("click", () => openModal("overallPerfModal"));
+
+    document.querySelectorAll(".dash-modal-close").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.closeModal;
+        closeModal(id);
+      });
+    });
+
+    document.querySelectorAll(".dash-modal").forEach((modal) => {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.classList.remove("open");
+          blurWrapper.classList.remove("blurred");
+        }
+      });
+    });
+
+    // Charts
+    function initCharts() {
+      const rcCanvas = document.getElementById("reportCardChart");
+      if (rcCanvas) {
+        const rcCtx = rcCanvas.getContext("2d");
+        new Chart(rcCtx, {
+          type: "bar",
+          data: {
+            labels: [
+              "Web Dev‑2",
+              "Comp Math‑2",
+              "DSA",
+              "Design Thinking",
+              "Physics",
+              "Minor Project",
+            ],
+            datasets: [
+              {
+                label: "Grade (%)",
+                data: [85, 78, 92, 88, 80, 95],
+                backgroundColor: "#1a73e8",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+              },
+            },
+          },
+        });
+      }
+
+      const opCanvas = document.getElementById("overallPerfChart");
+      if (opCanvas) {
+        const opCtx = opCanvas.getContext("2d");
+        new Chart(opCtx, {
+          type: "line",
+          data: {
+            labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+            datasets: [
+              {
+                label: "Performance Score",
+                data: [72, 80, 85, 90],
+                borderColor: "#0d47a1",
+                backgroundColor: "rgba(13, 71, 161, 0.1)",
+                fill: true,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+              },
+            },
+          },
+        });
+      }
+    }
+
     // Init
     initDateLabel();
     buildCalendar();
     loadProfile();
     loadTasks();
+    window.addEventListener("load", initCharts);
+    // Attendance tab logic
+    const attTabs = document.querySelectorAll(".attendance-tab");
+    const attPanels = document.querySelectorAll(".attendance-panel");
+
+    attTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.attTab;
+
+        attTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        attPanels.forEach(panel => {
+          panel.style.display =
+            panel.dataset.attPanel === target ? "block" : "none";
+        });
+      });
+    });
+
   </script>
 </body>
 
