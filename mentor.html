@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentor-Mentee</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    body{
+        background:#f4f7fb;
+        font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+        color:#1e293b;
+    }
+
+
+    .container{
+        padding:20px;
+    }
+
+    .section-header{
+        text-align:center;
+        margin-bottom:25px;
+        padding:22px;
+
+        background:#ffffff;
+        border-radius:18px;
+        box-shadow:0 10px 25px rgba(15,23,42,0.08);
+        border:1px solid rgba(203,213,225,0.9);
+
+        position:relative;
+        overflow:hidden;
+
+        transition:all 0.25s ease;
+    }
+
+
+    .section-header::before{
+        content:"";
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:4px;
+        background:linear-gradient(to right,#1a73e8,#0d47a1);
+    }
+
+
+    .section-header:hover{
+        transform:translateY(-4px);
+        box-shadow:0 20px 40px rgba(15,23,42,0.12);
+    }
+
+
+    .section-header h2{
+        font-size:28px;
+        font-weight:700;
+        color:#0d47a1;
+    }
+
+    .section-header h2 i{
+        margin-right:8px;
+        color:#0b63e5;
+    }
+
+    .section-header p{
+        color:#5f6368;
+        margin-top:6px;
+    }
+
+
+    .filters{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:12px;
+        margin:25px 0;
+    }
+
+    .filters button{
+        padding:8px 18px;
+        border-radius:999px;
+        background:#ffffff;
+        border:1px solid #e2e8f0;
+        cursor:pointer;
+        font-size:13px;
+        transition:0.3s;
+    }
+
+    .filters button:hover{
+        background:#eff6ff;
+        color:#2563eb;
+    }
+
+    .filters .active{
+        background:#0b63e5;
+        color:#fff;
+    }
+
+/* GRID */
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(260px, 300px));
+        justify-content:center;   
+        gap:20px;
+    }
+
+/* CARD */
+    .card{
+        background:#ffffff;
+        padding:20px;
+        border-radius:16px;
+        box-shadow:0 18px 40px rgba(15,23,42,0.08);
+        border:1px solid rgba(203,213,225,0.9);
+        text-align:center;
+        position:relative;
+        overflow:hidden;
+        transition:all 0.25s ease;
+        max-width:300px;   /* stretch control */
+        width:100%;
+    }
+
+    .card::before{
+        content:"";
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:4px;
+        background:linear-gradient(to right,#1a73e8,#0d47a1);
+    }
+
+    .card:hover{
+        transform:translateY(-6px) scale(1.01);
+        box-shadow:0 20px 40px rgba(15,23,42,0.12);
+    }
+
+    .card i{
+        font-size:32px;
+        color:#0b63e5;
+        margin-bottom:10px;
+    }
+
+    .card h4{
+        color:#1e3a8a;
+        margin-bottom:5px;
+    }
+
+    .card p{
+        font-size:14px;
+        color:#475569;
+    }
+
+/* BUTTONS */
+    .card button{
+        margin-top:10px;
+        width:100%;
+        padding:10px;
+        border:none;
+        border-radius:10px;
+        background:#0b63e5;
+        color:white;
+        font-weight:600;
+        cursor:pointer;
+        transition:0.3s;
+    }
+
+    .card button:hover{
+        background:#0d47a1;
+        transform:translateY(-2px);
+        box-shadow:0 8px 18px rgba(26,115,232,0.3);
+    }
+
+/* MODAL */
+    .modal{
+        display:none;
+        position:fixed;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.5);
+    }
+
+    .modal-content{
+        background:white;
+        margin:10% auto;
+        padding:20px;
+        width:320px;
+        border-radius:12px;
+    }
+
+/* BOOKING SECTION */
+    .booking{
+    
+        background:#ffffff;
+        padding:22px;
+        border-radius:16px;
+        box-shadow:0 18px 40px rgba(15,23,42,0.08);
+        border:1px solid rgba(203,213,225,0.9);
+        position:relative;
+        overflow:hidden;
+        margin:40px auto 0;
+        max-width:500px;  
+        width:100%;
+    }
+
+    .booking::before{
+        content:"";
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:4px;
+        background:linear-gradient(to right,#1a73e8,#0d47a1);
+    }
+
+    .booking h3{
+        text-align:center;
+        margin-bottom:15px;
+        color:#1e3a8a;
+    }
+
+    form{
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+    }
+
+    form select,
+    form input{
+        padding:10px;
+        border-radius:8px;
+        border:1px solid #cbd5f5;
+    }
+
+    form button{
+        background:#0b63e5;
+        color:white;
+        padding:10px;
+        border:none;
+        border-radius:10px;
+        cursor:pointer;
+    }
+
+    form button:hover{
+        background:#1d4ed8;
+    }
+
+/* NOTIFICATION */
+    .notification{
+        position:fixed;
+        top:20px;
+        right:20px;
+        background:#0b0f19;
+        color:white;
+        padding:14px 18px;
+        border-radius:10px;
+        border-left:4px solid #22c55e;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        animation:slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn{
+    from{
+    transform:translateX(120%);
+    opacity:0;
+    }
+    to{
+    transform:translateX(0);
+    opacity:1;
+    }
+    }
+
+
+    .modal{
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.5);
+
+        justify-content:center;
+        align-items:center;
+        z-index:1000;
+    }
+
+    .modal-content{
+        background:#fff;
+        padding:25px;
+        border-radius:15px;
+        width:90%;
+        max-width:400px;
+        position:relative;
+        animation:fadeIn 0.3s ease;
+    }
+
+    #closeModal{
+        position:absolute;
+        top:10px;
+        right:15px;
+        font-size:20px;
+        cursor:pointer;
+    }
+
+    @keyframes fadeIn{
+        from{transform:scale(0.9); opacity:0;}
+        to{transform:scale(1); opacity:1;}
+    }
+
+    .mentor-modal{
+        text-align:center;
+    }
+
+    .mentor-header{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        justify-content:center;
+        margin-bottom:10px;
+    }
+
+    .mentor-header i{
+        font-size:28px;
+        color:#1a73e8;
+        background:#e8f0fe;
+        padding:12px;
+        border-radius:50%;
+    }
+
+    .mentor-header h3{
+        margin:0;
+        font-size:20px;
+    }
+
+    .role{
+        font-size:14px;
+        color:#666;
+    }
+
+    .dept{
+        font-size:13px;
+        color:#888;
+        margin-bottom:10px;
+    }
+
+
+    .expertise{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        justify-content:center;
+        margin:15px 0;
+    }
+
+    .expertise span{
+        background:#eef4ff;
+        color:#1a73e8;
+        padding:5px 10px;
+        border-radius:20px;
+        font-size:12px;
+    }
+
+
+    .info{
+        text-align:left;
+        margin-top:10px;
+    }
+
+    .info p{
+        margin:6px 0;
+        font-size:14px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .info i{
+        color:#1a73e8;
+    }
+
+</style>
+
+</head>
+<body>
+
+    <section class="container">
+
+        <div class="section-header">
+            <h2><i class="fas fa-users"></i> Mentor-Mentee Program</h2>
+            <p>Connect with faculty mentors and peer support at KR Manglam University</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <button data-type="all" class="active">All</button>
+            <button data-type="cyber">Cyber Security</button>
+            <button data-type="web">Web Dev</button>
+            <button data-type="business">Business</button>
+            <button data-type="iot">IoT</button>
+            <button data-type="aiml">AI/ML</button>
+            <button data-type="devops">DevOps</button>
+            <button data-type="market">Marketing</button>
+            <button data-type="product">Product Management</button>
+            <button data-type="law">Law</button>
+        </div>
+
+        <!-- Mentor Cards -->
+        <div id="mentorGrid" class="grid"></div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span id="closeModal">&times;</span>
+                <div id="modalData"></div>
+            </div>
+        </div>
+
+        <!-- Booking -->
+        <div class="booking">
+            <h3>Book a Session</h3>
+
+            <form id="form">
+                <select id="domain"></select>
+                <select id="mentor"></select>
+                <input type="text" id="reason" placeholder="Reason">
+                <button type="submit">Book</button>
+                <button type="button" id="cancel" style="display:none;">Cancel</button>
+            </form>
+
+            <p id="note"></p>
+        </div>
+
+    </section>
+
+    <script>
+
+        let mentors = [];
+
+
+        /* FETCH JSON */
+        fetch("mentor.json")
+        .then(res => res.json())
+        .then(data => {
+            mentors = data;
+            renderMentors(mentors);
+            fillDropdowns();
+        })
+        .catch(err => console.log("JSON Error:", err));
+
+        /* ELEMENTS */
+        const grid = document.getElementById("mentorGrid");
+        const modal = document.getElementById("modal");
+        const modalData = document.getElementById("modalData");
+        const closeModal = document.getElementById("closeModal");
+
+        /* RENDER CARDS */
+        function renderMentors(data) {
+            grid.innerHTML = "";
+
+            data.forEach(m => {
+                grid.innerHTML += `
+                <div class="card">
+                    <i class="${m.icon}"></i>
+                    <h4>${m.name}</h4>
+                    <p>${m.role}</p>
+
+                    <button onclick="viewDetails('${m.name}')">View Details</button>
+                    <button onclick="selectMentor('${m.name}','${m.domain}')">Request Mentorship</button>
+                </div>`;
+            });
+        }
+
+        /* FILTER */
+        document.querySelectorAll(".filters button").forEach(btn => {
+            btn.onclick = () => {
+
+                document.querySelector(".filters .active").classList.remove("active");
+            btn.classList.add("active");
+
+            let type = btn.dataset.type;
+
+            if (type === "all") {
+                renderMentors(mentors);
+            } else {
+                let filtered = mentors.filter(m => m.domain === type);
+                renderMentors(filtered);
+            }
+            };
+        });
+
+        /* VIEW DETAILS MODAL */
+        function viewDetails(name) {
+            let m = mentors.find(x => x.name === name);
+            if (!m) return;
+
+            modal.style.display = "flex";
+
+            modalData.innerHTML = `
+                <div class="mentor-modal">
+
+                    <div class="mentor-header">
+                        <i class="${m.icon}"></i>
+                    <div>
+                        <h3>${m.name}</h3>
+                        <p class="role">${m.role}</p>
+                    </div>
+                </div>
+
+                    <p class="dept">${m.department}</p>
+
+                    <div class="expertise">
+                        ${m.expertise.map(e => `<span>${e}</span>`).join("")}
+                    </div>
+
+                    <div class="info">
+                        <p><i class="fas fa-briefcase"></i> ${m.experience}</p>
+                        <p><i class="fas fa-clock"></i> ${m.available}</p>
+                        ${m.sessions ? `<p><i class="fas fa-video"></i> ${m.sessions}</p>` : ""}
+                    </div>
+
+                    </div>
+                    `;
+        }
+
+        /* CLOSE MODAL */
+        closeModal.onclick = () => {
+            modal.style.display = "none";
+        };
+
+        window.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        /* AUTO FILL FORM */
+        function selectMentor(name, domain) {
+            document.getElementById("mentor").value = name;
+            document.getElementById("domain").value = domain;
+
+            showNotification(`Selected ${name} 👍`);
+        }
+
+        /* FILL DROPDOWNS */
+        function fillDropdowns() {
+            let domainSelect = document.getElementById("domain");
+            let mentorSelect = document.getElementById("mentor");
+
+            let domains = [...new Set(mentors.map(m => m.domain))];
+
+            domainSelect.innerHTML = `<option value="">Select Domain</option>`;
+            domains.forEach(d => {
+                domainSelect.innerHTML += `<option value="${d}">${d.toUpperCase()}</option>`;
+            });
+
+            mentorSelect.innerHTML = `<option value="">Select Mentor</option>`;
+            mentors.forEach(m => {
+                mentorSelect.innerHTML += `<option value="${m.name}">${m.name}</option>`;
+            });
+        }
+
+        /* BOOK SESSION */
+        document.getElementById("form").addEventListener("submit", function(e){
+            e.preventDefault();
+
+            let mentor = document.getElementById("mentor").value;
+            let domain = document.getElementById("domain").value;
+            let reason = document.getElementById("reason").value;
+
+            if (!mentor || !domain || !reason) {
+                showNotification("Please fill all fields ❗", true);
+                return;
+            }
+
+            showNotification(`Session booked with ${mentor} ✅`);
+
+            document.getElementById("cancel").style.display = "inline-block";
+
+            this.querySelector("button[type='submit']").disabled = true;
+        });
+
+        
+
+        /* CANCEL SESSION */
+        document.getElementById("cancel").addEventListener("click", () => {
+
+            document.getElementById("form").reset();
+
+            showNotification("Session Cancelled ❌", true);
+
+            //  cancel button hide again
+            document.getElementById("cancel").style.display = "none";
+
+            //  enable book button again
+            document.querySelector("#form button[type='submit']").disabled = false;
+        });
+
+
+
+        /* NOTIFICATION FUNCTION */
+        function showNotification(message, isError = false) {
+
+            let old = document.querySelector(".notification");
+            if (old) old.remove();
+
+            let div = document.createElement("div");
+            div.className = "notification";
+
+            div.innerHTML = `
+                <i class="fas ${isError ? "fa-times-circle" : "fa-check-circle"}"></i>
+                ${message}
+            `;
+
+            document.body.appendChild(div);
+
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        }
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+[
+  {
+    "name": "Dr. Rajesh Kumar",
+    "role": "Professor & HOD",
+    "department": "Computer Science & Engineering",
+    "domain": "cyber",
+    "icon": "fas fa-user-tie",
+    "expertise": ["AI/ML", "Cybersecurity", "Blockchain"],
+    "experience": "10+ years",
+    "available": "Weekends"
+  },
+
+  {
+    "name": "Dr. Meenu Sharma",
+    "role": "Associate Professor",
+    "department": "Electronics & Communication",
+    "domain": "iot",
+    "icon": "fas fa-user-graduate",
+    "expertise": ["IoT", "VLSI", "Embedded"],
+    "experience": "8+ years",
+    "available": "Evening"
+  },
+
+  {
+    "name": "Rohit Verma",
+    "role": "Software Engineer",
+    "department": "Web Development",
+    "domain": "web",
+    "icon": "fas fa-user",
+    "expertise": ["HTML", "React", "Node.js"],
+    "experience": "5+ years",
+    "available": "Evenings"
+  },
+
+  {
+    "name": "Arjun Nair",
+    "role": "Security Analyst",
+    "department": "Cybersecurity",
+    "domain": "cyber",
+    "icon": "fas fa-user-secret",
+    "expertise": ["Ethical Hacking", "Network Security", "Pen Testing"],
+    "experience": "6+ years",
+    "available": "Weekends"
+  },
+
+  {
+    "name": "Dr. Amit Patel",
+    "role": "Business Strategist",
+    "department": "Management",
+    "domain": "business",
+    "icon": "fas fa-user-tie",
+    "expertise": ["Strategy", "Operations", "Marketing"],
+    "experience": "8+ years",
+    "available": "Flexible"
+  },
+
+  {
+    "name": "Ravi Iyer",
+    "role": "Embedded Engineer",
+    "department": "IoT",
+    "domain": "iot",
+    "icon": "fas fa-wifi",
+    "expertise": ["Raspberry Pi", "Automation", "IoT Systems"],
+    "experience": "6+ years",
+    "available": "Weekend"
+  },
+
+  {
+    "name": "Dr. Vijay Sharma",
+    "role": "Cloud Engineer",
+    "department": "DevOps",
+    "domain": "devops",
+    "icon": "fas fa-user-graduate",
+    "expertise": ["AWS", "Azure", "Monitoring"],
+    "experience": "11+ years",
+    "available": "Night"
+  },
+
+  {
+    "name": "Sneha Gupta",
+    "role": "Digital Marketer",
+    "department": "Marketing",
+    "domain": "market",
+    "icon": "fas fa-bullhorn",
+    "expertise": ["SEO", "Social Media", "Ads"],
+    "experience": "4+ years",
+    "available": "Evening"
+  },
+
+  {
+    "name": "Karan Malhotra",
+    "role": "Product Manager",
+    "department": "Product",
+    "domain": "product",
+    "icon": "fas fa-lightbulb",
+    "expertise": ["UI/UX", "Agile", "Roadmap"],
+    "experience": "6+ years",
+    "available": "Weekends"
+  },
+
+  {
+    "name": "Anjali Desai",
+    "role": "Legal Advisor",
+    "department": "Legal",
+    "domain": "law",
+    "icon": "fas fa-gavel",
+    "expertise": ["Cyber Law", "Contracts", "IPR"],
+    "experience": "7+ years",
+    "available": "Afternoon"
+  },
+
+  {
+    "name": "Riya Khanna",
+    "role": "HR Consultant",
+    "department": "Business",
+    "domain": "business",
+    "icon": "fas fa-users",
+    "expertise": ["HR", "Recruitment", "Communication"],
+    "experience": "5+ years",
+    "available": "Flexible"
+  },
+
+  {
+    "name": "Priya Mehta",
+    "role": "Data Scientist",
+    "department": "AI/ML",
+    "domain": "aiml",
+    "icon": "fas fa-robot",
+    "expertise": ["Data Analysis", "ML Models", "TensorFlow"],
+    "experience": "5+ years",
+    "available": "Evening"
+  },
+
+  {
+    "name": "Simran Kaur",
+    "role": "UI/UX Designer",
+    "department": "Product Design",
+    "domain": "product",
+    "icon": "fas fa-pencil-ruler",
+    "expertise": ["Figma", "User Research", "Wireframing"],
+    "experience": "5+ years",
+    "available": "Evening",
+    "sessions": "Portfolio Review, Case Study Help"
+  }
+  
+]
