@@ -197,6 +197,18 @@
             background:#1d4ed8;
         }
 
+        .hostel-booking-form button,
+        .complaint-section button{
+            transition: all 0.25s ease;
+        }
+
+        .hostel-booking-form button:hover,
+        .complaint-section button:hover{
+            background:#0d47a1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(26,115,232,0.3);
+        }
+
         .bottom-sections{
             display:flex;
             flex-wrap:wrap;
@@ -304,7 +316,9 @@
 
 
     </style>
+
 </head>
+
 <body>
    <section id="hostel-section" class="content">
     <div class="section-header">
@@ -312,6 +326,7 @@
         <p>Check hostel details and book your room</p>
     </div>
 
+    <!-- Filter box -->
     <div class="hostel-container">
         <div class="hostel-filters">
             <div class="filter-option active" data-type="all">All Rooms</div>
@@ -322,6 +337,8 @@
             <div class="filter-option" data-type="ac">Air Conditioned</div>
             <div class="filter-option" data-type="non-ac">Non Air Conditioned</div>
         </div>
+
+        <!-- Hostel room cards -->
 
         <div class="hostel-rooms">
             <div class="room-card" data-type="single ac">
@@ -342,6 +359,7 @@
                 <button class="btn-book-room">Book Now</button>
             </div>
 
+
                <div class="room-card" data-type="double ac">
                 <div class="room-header">
                     <h3>Double Occupancy AC Room</h3>
@@ -359,6 +377,7 @@
                 </div>
                 <button class="btn-book-room">Book Now</button>
             </div>
+
 
              <div class="room-card" data-type="double non-ac">
                 <div class="room-header">
@@ -378,6 +397,7 @@
                 <button class="btn-book-room">Book Now</button>
             </div>
 
+
               <div class="room-card" data-type="triple non-ac">
                 <div class="room-header">
                     <h3>Triple Occupancy Non-AC Room</h3>
@@ -395,6 +415,7 @@
                 </div>
                 <button class="btn-book-room">Book Now</button>
             </div>
+
 
                 <div class="room-card" data-type="triple ac">
                 <div class="room-header">
@@ -414,6 +435,7 @@
                 <button class="btn-book-room">Book Now</button>
             </div>
 
+
                 <div class="room-card" data-type="quad non-ac">
                 <div class="room-header">
                     <h3>Quad Sharing Non-AC Room</h3>
@@ -431,6 +453,7 @@
                 </div>
                 <button class="btn-book-room">Book Now</button>
             </div>
+
 
                <div class="room-card" data-type="single non-ac">
                 <div class="room-header">
@@ -450,6 +473,7 @@
                 <button class="btn-book-room">Book Now</button>
             </div>
 
+
                 <div class="room-card" data-type="quad ac">
                 <div class="room-header">
                     <h3>Quad Sharing AC Room</h3>
@@ -467,9 +491,11 @@
                 </div>
                 <button class="btn-book-room">Book Now</button>
             </div>
+
         
         </div>
 
+            <!-- Hostel booking form card-->
 
          <div class="bottom-sections">
 
@@ -511,6 +537,8 @@
                 </form>
             </div>
 
+
+            <!-- Hostel complaint form card-->
             <div class="complaint-section">
                 <h3><i class="fas fa-exclamation-circle"></i> Hostel Complaint Service</h3>
 
@@ -544,34 +572,36 @@
 
     <script>
 
-
         
-// ===== FILTER (FINAL FIX) =====
-const filters = document.querySelectorAll(".filter-option");
-const rooms = document.querySelectorAll(".room-card");
+                // FILTER (FINAL FIX)
 
-filters.forEach(btn => {
-    btn.addEventListener("click", () => {
+        const filters = document.querySelectorAll(".filter-option");
+        const rooms = document.querySelectorAll(".room-card");
 
-        filters.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+        filters.forEach(btn => {
+            btn.addEventListener("click", () => {
 
-        let type = btn.dataset.type.toLowerCase().trim();
+                filters.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
 
-        rooms.forEach(card => {
-            let cardType = card.dataset.type.toLowerCase().split(" "); 
+                let type = btn.dataset.type.toLowerCase().trim();
+
+                rooms.forEach(card => {
+                    let cardType = card.dataset.type.toLowerCase().split(" "); 
             
 
-            if(type === "all" || cardType.includes(type)){
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
-        });
+                    if(type === "all" || cardType.includes(type)){
+                        card.style.display = "block";
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
 
-    });
-});
+                });
+            });
 
+
+            // Notification system
 
         function showNotification(message){
         const notif = document.createElement("div");
@@ -628,6 +658,8 @@ filters.forEach(btn => {
     });
 
 
+    // Hostel Booking Form
+
     const bookingForm = document.getElementById("hostelBookingForm");
 
     if(bookingForm){
@@ -651,6 +683,7 @@ filters.forEach(btn => {
             this.reset();
         });
     }
+
 
 // COMPLAINT FORM
     const complaintForm = document.getElementById("complaintForm");
