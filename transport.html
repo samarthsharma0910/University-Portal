@@ -249,7 +249,8 @@ button {
   <div class="card personal-card">
     <img src="image.jpg">
     <div class="info" id="main">
-      <h3>Ghanishtha Bhardwaj</h3><div id="main-content">
+      <h3 id="studentName">Student</h3>
+      <div id="main-content">
       <p><b>Bus:</b> 101</p>
       <p><b>Stop:</b> Sector 12 </p>
       <p><b>Pickup:</b> 8:10 AM</p>
@@ -473,6 +474,15 @@ routeDiv.innerHTML = html;
 function closeModal() {
   document.getElementById("modal").classList.add("hidden");
 }
+  const LS_PROFILE_KEY = "krmu_profile";
+function loadName() {
+  const raw = localStorage.getItem(LS_PROFILE_KEY);
+  if (!raw) return;
+  const p = JSON.parse(raw);
+  document.getElementById("studentName").textContent =
+    p.name || "Student";
+}
+loadName();
 </script>
 </body>
 </html>
