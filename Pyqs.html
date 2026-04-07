@@ -27,7 +27,6 @@ h1{
 
 .sub{text-align:center;color:#555;margin-bottom:20px;}
 
-/* SEARCH FIXED */
 .search{
     max-width:600px;
     margin:0 auto 25px auto;
@@ -35,7 +34,6 @@ h1{
     border-radius:12px;
     padding:8px;
     border:2px solid #dbeafe;
-    box-shadow:0 5px 15px rgba(0,0,0,0.08);
 }
 
 .searchWrap{
@@ -47,91 +45,88 @@ h1{
     padding:5px 10px;
 }
 
-.searchWrap i{
-    color:#3b82f6;
-}
-
 .searchWrap input{
     width:100%;
     padding:12px;
     border:none;
     outline:none;
     background:transparent;
-    font-size:1rem;
 }
 
-/* BUTTONS */
-.quick{
+.boxBtns{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-    gap:10px;
-    margin-bottom:20px;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:25px;
 }
 
-.quick button{
-    padding:12px;
-    border:1px solid #3b82f6;
+.btnCard{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:16px;
     background:white;
+    border:2px solid #dbeafe;
+    border-radius:12px;
     color:#3b82f6;
-    border-radius:8px;
+    font-weight:600;
     cursor:pointer;
     transition:0.3s;
 }
 
-.quick button:hover{
+.btnCard:hover{
     background:#3b82f6;
     color:white;
-    transform:translateY(-2px);
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(59,130,246,0.3);
 }
 
-/* GRID */
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-    gap:18px;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:20px;
 }
 
 .card{
     background:white;
     border-radius:12px;
-    overflow:hidden;
+    padding:18px;
     transition:0.3s;
 }
 
 .card:hover{
     transform:translateY(-6px);
-    box-shadow:0 10px 20px rgba(0,0,0,0.15);
-}
-
-.top{
-    background:#eef4ff;
-    padding:15px;
-    text-align:center;
+    box-shadow:0 15px 30px rgba(0,0,0,0.15);
 }
 
 .tag{
-    background:#1e3a8a;
+    display:inline-block;
+    background:#3b82f6;
     color:white;
     padding:4px 10px;
     border-radius:20px;
     font-size:0.8rem;
 }
 
-.title{font-weight:700;margin-top:6px;}
-.info{font-size:0.85rem;color:#555;}
+.title{
+    font-weight:700;
+    margin-top:6px;
+}
 
-.bottom{
-    padding:12px;
+.info{
+    font-size:0.9rem;
+    color:#555;
 }
 
 .downBtn{
     width:100%;
-    padding:9px;
+    margin-top:10px;
+    padding:8px;
     border:none;
     background:#3b82f6;
     color:white;
     border-radius:6px;
-    cursor:pointer;
 }
 
 .star{
@@ -158,10 +153,10 @@ h1{
 </div>
 </div>
 
-<div class="quick">
-<button onclick="upload()">Upload</button>
-<button onclick="showFav()">Favorites</button>
-<button onclick="showTrend()">Trending</button>
+<div class="boxBtns">
+<div class="btnCard" onclick="upload()"><i class="fas fa-upload"></i> Upload</div>
+<div class="btnCard" onclick="showFav()"><i class="fas fa-star"></i> Favorites</div>
+<div class="btnCard" onclick="showTrend()"><i class="fas fa-fire"></i> Trending</div>
 </div>
 
 <div id="list" class="grid"></div>
@@ -202,35 +197,24 @@ let star = favs.includes(p.id) ? "★" : "☆";
 
 box.innerHTML+=`
 <div class="card">
-<div class="top">
-<div class="tag">${p.t}</div>
+<span class="tag">${p.t}</span>
 <div class="title">${p.sub}</div>
 <div class="info">${p.c} | ${p.y} | ${p.sem}</div>
-</div>
 
-<div class="bottom">
 <button class="downBtn" onclick="download(${p.id})">Download</button>
 <div class="star" onclick="toggle(${p.id})">${star}</div>
-</div>
 </div>`;
 });
 }
 
 function download(id){
 let p=papers.find(x=>x.id===id);
-
-let text=`Question Paper\n\nSubject: ${p.sub}\n\nQ1 Explain the concept
-\nQ2 Notes of the concept
-\nQ3 Solve the concept`;
-
-let blob=new Blob([text],{type:"text/plain"});
+let blob=new Blob(["Question Paper\n"+p.sub],{type:"text/plain"});
 let url=URL.createObjectURL(blob);
-
 let a=document.createElement("a");
 a.href=url;
 a.download=p.sub+".txt";
 a.click();
-
 count[id]=(count[id]||0)+1;
 }
 
@@ -264,7 +248,6 @@ document.getElementById("filePick").click();
 document.getElementById("filePick").addEventListener("change",function(e){
 let f=e.target.files[0];
 if(!f) return;
-
 papers.push({id:papers.length+1,t:"MID",sub:f.name,c:"Uploaded",y:2025,sem:""});
 show(papers);
 });
