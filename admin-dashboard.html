@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KRMU – Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --blue: #1a73e8;
+      --blue-dark: #0d47a1;
+      --yellow: #ffb020;
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-main: #1f2933;
+      --text-muted: #5f6368;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+      --shadow-light: 0 10px 25px rgba(15, 23, 42, 0.04);
+      --border-subtle: 1px solid rgba(203, 213, 225, 0.9);
+      --task-done-bg: #e3f9e5;
+      --task-done-text: #047857;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    #timetable-section,
+#attendance-section,
+#tasks-section {
+  scroll-margin-top: 80px;
+}
+    /* File upload button */
+#taskFile {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.task-file-label {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--blue);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.16s ease;
+}
+
+.task-file-label:hover {
+  background: var(--blue-dark);
+  transform: translateY(-1px);
+}
+
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont,
+        'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      flex-shrink: 0;
+      background: linear-gradient(180deg,
+          rgba(26, 115, 232, 0.55),
+          rgba(13, 71, 161, 0.65));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 8px 0 30px rgba(13, 71, 161, 0.35);
+      color: #f9fafb;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #e8f0fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #1f2933;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.24);
+    }
+
+    .sidebar-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      color: #ffffff;
+    }
+
+    .sidebar-title span:first-child {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      opacity: 0.9;
+    }
+
+    .sidebar-title span:last-child {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.12);
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: 0.18s ease-out;
+    }
+
+    .nav-item.active {
+      background: #ffffff;
+      color: var(--blue-dark);
+      box-shadow: 0 10px 22px rgba(13, 71, 161, 0.3);
+    }
+
+    .nav-item:not(.active):hover {
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateX(6px);
+      box-shadow: 0 6px 18px rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 12px;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.35);
+      color: #e3f2fd;
+    }
+
+    .semester-bar {
+      width: 60px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .semester-bar-fill {
+      height: 100%;
+      background: #ffffff;
+      width: 66%;
+      transition: width 0.3s ease;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .search-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 2px solid #e0e0e0;
+      padding: 11px 14px 11px 42px;
+      font-size: 13px;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      color: var(--text-main);
+      outline: none;
+      font-family: 'Roboto', sans-serif;
+      background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b8794' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='11' cy='11' r='6'/%3E%3Cline x1='16.5' y1='16.5' x2='21' y2='21'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 16px center;
+      background-size: 16px;
+      transition: box-shadow 0.16s ease-out, border-color 0.16s ease-out;
+    }
+
+    .search-input:hover {
+      box-shadow: 0 12px 32px rgba(148, 163, 184, 0.35);
+    }
+
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .top-right span {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .avatar-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 4px 6px 4px 10px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #e8f0fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--blue-dark);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.4fr);
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      padding: 18px 20px;
+      border: var(--border-subtle);
+      transition: transform 0.16s ease-out, box-shadow 0.16s ease-out;
+    }
+
+    .card:hover {
+      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+      transform: translateY(-1px);
+    }
+
+    /* Profile hero */
+    .profile-card {
+      display: grid;
+      grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.5fr);
+      gap: 18px;
+      align-items: center;
+      padding: 20px 22px;
+      background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 60%, #e3f2fd 100%);
+      color: #ffffff;
+    }
+
+    .profile-text-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .profile-text-body {
+      font-size: 13px;
+      color: #e3f2fd;
+      margin-bottom: 10px;
+    }
+
+    .profile-illustration {
+      height: 120px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #e8f0fe, #bbdefb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(to right, #1a73e8, #0d47a1);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(26, 115, 232, 0.35);
+      transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, filter 0.18s ease-out;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(13, 71, 161, 0.4);
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--blue-dark);
+    }
+
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .section-link {
+      font-size: 12px;
+      color: var(--blue-dark);
+      cursor: pointer;
+    }
+
+    /* Timetable */
+    .timetable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .timetable th,
+    .timetable td {
+      padding: 8px 8px;
+      text-align: left;
+    }
+
+    .timetable th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    }
+
+    .timetable td {
+      border-bottom: 1px solid rgba(243, 244, 246, 0.9);
+    }
+
+    .timetable tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .timetable tbody tr:hover {
+      background: #e8f0fe;
+    }
+
+    /* Right column */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Calendar */
+    .calendar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .calendar-month-label {
+      font-weight: 600;
+      color: var(--blue-dark);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    .calendar-day {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .calendar-day.active {
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    /* Attendance */
+    .attendance-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-header h3 {
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .secondary-btn {
+      margin-top: 10px;
+      border-radius: 999px;
+      border: 1px solid var(--blue);
+      background: #ffffff;
+      color: var(--blue);
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.16s ease-out;
+    }
+
+    .secondary-btn:hover {
+      background: #e8f0fe;
+      transform: translateY(-1px);
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .overlay-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px 22px 18px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .overlay-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .overlay-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      font-size: 13px;
+      outline: none;
+      font-family: 'Roboto', sans-serif;
+      transition: border-color 0.16s ease-out, box-shadow 0.16s ease-out;
+    }
+
+    .form-group input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35);
+    }
+
+    .error-text {
+      font-size: 11px;
+      color: #b91c1c;
+      margin-top: 2px;
+      display: none;
+    }
+
+    .overlay-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Blur wrapper */
+    #blurWrapper {
+      transition: filter 0.2s ease, opacity 0.2s ease;
+    }
+
+    #blurWrapper.blurred {
+      filter: blur(4px);
+      opacity: 0.7;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      color: white;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 2000;
+    }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 0;
+      }
+
+      .nav {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        margin-left: 16px;
+      }
+
+      .sidebar-footer {
+        display: none;
+      }
+
+      .main {
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .content {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .top-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Blur wrapper -->
+  <div id="blurWrapper">
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">K</div>
+          <div class="sidebar-title">
+            <span>KRMU</span>
+            <span>Admin Portal</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="nav-item active" href="#attendance-section" data-scroll-target="attendance-section">
+            <div class="nav-icon">📊</div>
+            <span>Attendance</span>
+          </a>
+          <a class="nav-item" href="#timetable-section" data-scroll-target="timetable-section">
+            <div class="nav-icon">📅</div>
+            <span>Timetable</span>
+          </a>
+          <a class="nav-item" href="#tasks-section" data-scroll-target="tasks-section">
+            <div class="nav-icon">📤</div>
+            <span>Upload Assignment</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main">
+        <!-- Top bar -->
+        <header class="top-bar">
+          <div class="search-wrapper">
+            <input type="text" class="search-input" placeholder="What do you want to update today?" />
+          </div>
+          <div class="top-right">
+            <span id="dateLabel">Date</span>
+            <div class="avatar-pill">
+              <span id="topUserName">Admin</span>
+              <div class="avatar" id="topAvatar">AD</div>
+            </div>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Center column -->
+          <div>
+            <!-- Profile hero -->
+            <section class="card profile-card">
+              <div>
+                <div class="profile-text-title">Your Profile</div>
+                <p class="profile-text-body" id="profileIntro">
+                  Heyy Admin, welcome to KRMU dashboard.
+                </p>
+                <p class="profile-text-body" id="profileDetails">
+                  Email: -, Mobile: -, Department:.
+                </p>
+                <button class="primary-btn" id="editProfileBtn">Edit Profile</button>
+              </div>
+              <div class="profile-illustration">👨‍🏫</div>
+            </section>
+
+            <!-- Timetable -->
+            <section class="card" id="timetable-section">
+              <div class="section-header-row">
+                <button class="secondary-btn" onclick="editTimetable()">Edit</button>
+                <div class="section-title">Time Table</div>
+                <div class="section-link">View More</div>
+              </div>
+              <table class="timetable">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Subject</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>09:00 – 10:00</td>
+                    <td>Web Dev‑2</td>
+                  </tr>
+                  <tr>
+                    <td>10:00 – 11:00</td>
+                    <td>Computational Mathematics‑2</td>
+                  </tr>
+                  <tr>
+                    <td>11:15 – 12:15</td>
+                    <td>Data Structures</td>
+                  </tr>
+                  <tr>
+                    <td>12:15 – 01:15</td>
+                    <td>Design Thinking and Prototyping</td>
+                  </tr>
+                  <tr>
+                    <td>02:00 – 03:00</td>
+                    <td>Engineering Physics</td>
+                  </tr>
+                  <tr>
+                    <td>03:00 – 04:00</td>
+                    <td>Minor Project</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <!-- Attendance -->
+            <section class="card">
+              <div class="section-header-row">
+                <div class="section-title" id="attendance-section">Student Attendance</div>
+                <button onclick="resetAttendance()" class="secondary-btn">Reset</button>
+              </div>
+              <ul id="studentList" style="list-style:none; padding:0; margin-top:10px;"></ul>
+            </section>
+          </div>
+
+          <!-- Right column -->
+          <div class="right-column">
+            <!-- Calendar -->
+            <section class="card">
+              <div class="calendar-top">
+                <span class="calendar-month-label" id="calendarMonthLabel">Month</span>
+                <span id="calendarTodayText">Today</span>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </section>
+
+            <!-- Tasks -->
+            <section class="card" id="tasks-section">
+              <div class="section-title">Upload Task for Today</div>
+              <div style="margin-top:10px;">
+                <label class="task-file-label" for="taskFile">Upload File</label>
+                <input type="file" id="taskFile" style="margin-bottom:10px;" />
+                <div id="taskFileLabel" style="display:block; margin: 6px 0; font-size:12px; color:var(--text-muted);">No file selected</div>
+                <textarea id="taskText" placeholder="Write task details..."
+                  style="width:100%; padding:8px; border-radius:8px; border:1px solid #ccc;"></textarea>
+                <button class="primary-btn" style="margin-top:10px;" onclick="uploadTask()">
+                  Upload Task
+                </button>
+              </div>
+            </section>
+
+            <!-- Refer card -->
+            <section class="card">
+              <div class="section-title">Refer other admins</div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                Invite other admins to join KRMU portal and track the students for a brighter future.
+              </p>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Profile overlay -->
+  <div class="overlay" id="profileOverlay" style="display:none;">
+    <div class="overlay-card">
+      <div class="overlay-title">Create your KRMU account</div>
+      <div class="overlay-sub">
+        Enter your details. Your email will be generated as <code>8digits@krmu.edu.in</code>.
+      </div>
+      <form id="profileForm">
+        <div class="form-group">
+          <label for="rollInput">Employee ID (8 digits)</label>
+          <input id="rollInput" maxlength="8" required />
+          <div class="error-text" id="rollError">Employee id must be exactly 8 digits.</div>
+        </div>
+        <div class="form-group">
+          <label for="nameInput">Name</label>
+          <input id="nameInput" required />
+        </div>
+        <div class="form-group">
+          <label for="mobileInput">Mobile No</label>
+          <input id="mobileInput" maxlength="10" required />
+        </div>
+        <div class="form-group">
+          <label for="courseInput">Department</label>
+          <input id="courseInput" required placeholder="example: Computer Science department" />
+        </div>
+        <div class="overlay-actions">
+          <button type="submit" class="primary-btn">Save & Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Constants
+    const LS_PROFILE_KEY = "krmu_profile";
+    const LS_UPLOADED_TASKS_KEY = "krmu_uploaded_tasks";
+    const LS_ATTENDANCE_KEY = "krmu_attendance_data";
+
+    // Elements
+    const dateLabel = document.getElementById("dateLabel");
+    const topUserName = document.getElementById("topUserName");
+    const topAvatar = document.getElementById("topAvatar");
+    const profileIntro = document.getElementById("profileIntro");
+    const profileDetails = document.getElementById("profileDetails");
+    const profileOverlay = document.getElementById("profileOverlay");
+    const profileForm = document.getElementById("profileForm");
+    const rollInput = document.getElementById("rollInput");
+    const rollError = document.getElementById("rollError");
+    const nameInput = document.getElementById("nameInput");
+    const mobileInput = document.getElementById("mobileInput");
+    const courseInput = document.getElementById("courseInput");
+    const editProfileBtn = document.getElementById("editProfileBtn");
+    const calendarMonthLabel = document.getElementById("calendarMonthLabel");
+    const calendarTodayText = document.getElementById("calendarTodayText");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const studentList = document.getElementById("studentList");
+    const blurWrapper = document.getElementById("blurWrapper");
+
+    // Students data
+    const students = [
+      { name: "Aman", roll: "101" },
+      { name: "Riya", roll: "102" },
+      { name: "Kunal", roll: "103" },
+      { name: "Sneha", roll: "104" },
+      { name: "Rahul", roll: "105" },
+      { name: "Priya", roll: "106" }
+    ];
+
+    // Helpers
+    function getTodayId() {
+      const d = new Date();
+      return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    }
+
+    function showToast(msg, color) {
+      const div = document.createElement("div");
+      div.className = "toast";
+      div.style.background = color;
+      div.innerText = msg;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 2000);
+    }
+
+    function initDateLabel() {
+      const now = new Date();
+      const options = { year: "numeric", month: "short", day: "numeric" };
+      dateLabel.textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    // Calendar
+    function buildCalendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const todayDate = now.getDate();
+
+      const monthName = now.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+      });
+      calendarMonthLabel.textContent = monthName;
+
+      const todayText = now.toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+      });
+      calendarTodayText.textContent = "Today · " + todayText;
+
+      calendarGrid.innerHTML = "";
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.className = "calendar-day empty";
+        calendarGrid.appendChild(emptyDiv);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const div = document.createElement("div");
+        div.className = "calendar-day";
+        if (day === todayDate) {
+          div.classList.add("active");
+        }
+        div.textContent = day;
+
+        const dateObj = new Date(year, month, day);
+        const jsDay = dateObj.getDay();
+        const dayMap = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
+        const weekdayKey = dayMap[jsDay];
+
+        if (weekdayKey) {
+          div.style.cursor = "pointer";
+        }
+
+        calendarGrid.appendChild(div);
+      }
+    }
+
+    // Profile
+    function loadProfile() {
+      const raw = localStorage.getItem(LS_PROFILE_KEY);
+      if (!raw) {
+        profileOverlay.style.display = "flex";
+        blurWrapper.classList.add("blurred");
+        return;
+      }
+      const p = JSON.parse(raw);
+      applyProfileToUI(p);
+    }
+
+    function applyProfileToUI(p) {
+      topUserName.textContent = p.name || "Admin";
+      topAvatar.textContent = (p.name ? p.name.substring(0, 2) : "AD").toUpperCase();
+      profileIntro.textContent = `Welcome ${p.name || "Admin"}, manage student data, attendance and assignments from here.`;
+      profileDetails.textContent = `Employee ID: ${p.roll}, Mobile: ${p.mobile}, Department: ${p.course}.`;
+    }
+
+    // Attendance
+    function loadStudents() {
+      const savedAttendance = JSON.parse(localStorage.getItem(LS_ATTENDANCE_KEY) || "{}");
+      studentList.innerHTML = "";
+      students.forEach(s => {
+        const status = savedAttendance[s.roll] || "Not Marked";
+        const isPresent = status === "Present";
+        const isAbsent = status === "Absent";
+
+        const li = document.createElement("li");
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.padding = "10px 0";
+        li.style.borderBottom = "1px solid #eee";
+
+        li.innerHTML = `
+          <span><strong>${s.name}</strong> (${s.roll}) <br> 
+            <small style="color: ${isPresent ? 'green' : isAbsent ? 'red' : '#666'}">Status: ${status}</small>
+          </span>
+          <div>
+            <button style="background: ${isPresent ? '#28a745' : '#e0e0e0'}; color: white; border:none; padding: 5px 10px; border-radius:4px; cursor:pointer; margin-left:5px;" 
+              onclick="updateAttendance('${s.roll}', 'Present')">Present</button>
+            <button style="background: ${isAbsent ? '#dc3545' : '#e0e0e0'}; color: white; border:none; padding: 5px 10px; border-radius:4px; cursor:pointer;" 
+              onclick="updateAttendance('${s.roll}', 'Absent')">Absent</button>
+          </div>
+        `;
+        studentList.appendChild(li);
+      });
+    }
+
+    function updateAttendance(roll, status) {
+      const savedAttendance = JSON.parse(localStorage.getItem(LS_ATTENDANCE_KEY) || "{}");
+      savedAttendance[roll] = status;
+      localStorage.setItem(LS_ATTENDANCE_KEY, JSON.stringify(savedAttendance));
+      showToast(`Roll ${roll} marked ${status}`, status === "Present" ? "green" : "red");
+      loadStudents();
+    }
+
+    function resetAttendance() {
+      localStorage.removeItem(LS_ATTENDANCE_KEY);
+      loadStudents();
+      showToast("Attendance reset", "orange");
+    }
+
+    // Task upload
+    function uploadTask() {
+      const text = document.getElementById("taskText").value;
+      const fileInput = document.getElementById("taskFile");
+      const file = fileInput.files[0];
+
+      if (!text && !file) {
+        showToast("Please enter text or select a file to upload.", "orange");
+        return;
+      }
+
+      const uploadedTasks = JSON.parse(localStorage.getItem(LS_UPLOADED_TASKS_KEY) || "[]");
+      const newTask = {
+        id: Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        text: text,
+        fileName: file ? file.name : null
+      };
+
+      uploadedTasks.push(newTask);
+      localStorage.setItem(LS_UPLOADED_TASKS_KEY, JSON.stringify(uploadedTasks));
+
+      showToast("Task Uploaded Successfully!", "green");
+      document.getElementById("taskText").value = "";
+      fileInput.value = "";
+    }
+
+    document.getElementById("taskFile").addEventListener("change", function () {
+  const el = document.getElementById("taskFileLabel");
+  if (this.files.length > 0) {
+    el.textContent = "File: " + this.files.name;
+  } else {
+    el.textContent = "No file selected";
+  }
+});
+
+    // Timetable edit
+    function editTimetable() {
+      const body = document.querySelector(".timetable tbody");
+      const rows = body.querySelectorAll("tr");
+
+      rows.forEach(row => {
+        const subjectCell = row.querySelector("td:nth-child(2)");
+        const currentSubject = subjectCell.textContent;
+        const newSubject = prompt(`Edit subject for ${row.querySelector("td:nth-child(1)").textContent}:`, currentSubject);
+
+        if (newSubject !== null && newSubject.trim() !== "") {
+          subjectCell.textContent = newSubject.trim();
+        }
+      });
+      showToast("Timetable updated", "green");
+    }
+
+    // Event listeners
+    document.addEventListener("DOMContentLoaded", function() {
+      initDateLabel();
+      buildCalendar();
+      loadProfile();
+      loadStudents();
+
+      profileForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const roll = rollInput.value.trim();
+        if (!/^\d{8}$/.test(roll)) {
+          rollError.style.display = "block";
+          return;
+        }
+        rollError.style.display = "none";
+
+        const name = nameInput.value.trim() || "Admin";
+        const mobile = mobileInput.value.trim();
+        const course = courseInput.value.trim();
+        const email = roll + "@krmu.edu.in";
+
+        const profile = { roll, email, name, mobile, course };
+        localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(profile));
+        applyProfileToUI(profile);
+        profileOverlay.style.display = "none";
+        blurWrapper.classList.remove("blurred");
+      });
+
+      editProfileBtn.addEventListener("click", function () {
+        const raw = localStorage.getItem(LS_PROFILE_KEY);
+        if (raw) {
+          const p = JSON.parse(raw);
+          rollInput.value = p.roll;
+          nameInput.value = p.name;
+          mobileInput.value = p.mobile;
+          courseInput.value = p.course;
+        }
+        profileOverlay.style.display = "flex";
+        blurWrapper.classList.add("blurred");
+      });
+
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          document.querySelectorAll(".nav-item").forEach((el) => el.classList.remove("active"));
+          item.classList.add("active");
+        });
+      });
+    });
+
+    // Smooth scroll on navbar clicks
+document.querySelectorAll(".nav-item[data-scroll-target]").forEach(item => {
+  item.addEventListener("click", e => {
+    e.preventDefault();
+    const targetId = item.dataset.scrollTarget;
+    const targetEl = document.getElementById(targetId);
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+    item.classList.add("active");
+  });
+});
+  </script>
+</body>
+</html>
