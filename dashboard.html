@@ -839,6 +839,101 @@
         justify-content: space-between;
       }
     }
+
+    /* Chatbot modal overlay */
+    #chatModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1050;
+    }
+
+    /* Center card */
+    #chatModalCard {
+      background: #ffffff;
+      border-radius: 18px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+      overflow: hidden;
+    }
+
+    /* Optional: internal chat area sizing */
+    #chatModalCard .chat-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    #chatbotOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+
+    #chatbot {
+      width: 60%;
+      height: 60vh;
+      background: #1a73e8;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    #chatbotHeader {
+      padding: 12px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #chatMessages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      background: white;
+    }
+
+    #chatInputArea {
+      display: flex;
+    }
+
+    #chatInput {
+      flex: 1;
+      border: none;
+      padding: 10px;
+    }
+
+    #chatInputArea button {
+      background: #0d47a1;
+      color: white;
+      border: none;
+      padding: 10px;
+    }
+
+    #chatWidgetBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -882,7 +977,7 @@
             <span>Courses</span>
           </a>
 
-          <a class="nav-item" data-section="alumni" href="#alumni">
+          <a class="nav-item" data-section="alumni" href="https://alumnicall.lovable.app/">
             <div class="nav-icon">🤝</div>
             <span>Alumni contact</span>
           </a>
@@ -897,10 +992,6 @@
             <span>Transport route</span>
           </a>
 
-          <a class="nav-item" data-section="hostel" href="hostel.html">
-            <div class="nav-icon">🏠</div>
-            <span>Hostel</span>
-          </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -959,32 +1050,8 @@
                     <th>Subject</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>09:00 – 10:00</td>
-                    <td>Web Dev‑2</td>
-                  </tr>
-                  <tr>
-                    <td>10:00 – 11:00</td>
-                    <td>Computational Mathematics‑2</td>
-                  </tr>
-                  <tr>
-                    <td>11:15 – 12:15</td>
-                    <td>Data Structures</td>
-                  </tr>
-                  <tr>
-                    <td>12:15 – 01:15</td>
-                    <td>Design Thinking and Prototyping</td>
-                  </tr>
-                  <tr>
-                    <td>02:00 – 03:00</td>
-                    <td>Engineering Physics</td>
-                  </tr>
-                  <tr>
-                    <td>03:00 – 04:00</td>
-                    <td>Minor Project</td>
-                  </tr>
-                </tbody>
+                <tbody id="timetableBody"></tbody>
+
               </table>
             </section>
 
@@ -1194,479 +1261,528 @@
     </div>
   </div>
 
-  <script>
-    // Keys for localStorage
-    const LS_PROFILE_KEY = "krmu_profile";
-    const LS_TASKS_KEY = "krmu_tasks";
-    const LS_CSV_KEY = "krmu_students_csv";
+  <!-- AI Chatbot -->
+  <!-- Overall Performance Modal -->
+  
+    <!-- Chatbot Overlay -->
+    <div id="chatbotOverlay">
+      <div id="chatbot">
 
+        <div id="chatbotHeader">
+          AI Assistant
+          <button onclick="closeChat()"
+            style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">✕</button>
+        </div>
 
-    // Weekday timetable mapping (static demo data)
-    const WEEK_SCHEDULE = {
-      mon: [
-        { time: "09:00 – 10:00", subject: "Web Dev‑2" },
-        { time: "10:00 – 11:00", subject: "Computational Mathematics‑2" },
-        { time: "11:15 – 12:15", subject: "Data Structures" },
-        { time: "12:15 – 01:15", subject: "Design Thinking and Prototyping" },
-        { time: "02:00 – 03:00", subject: "Engineering Physics" },
-        { time: "03:00 – 04:00", subject: "Minor Project" }
-      ],
-      tue: [
-        { time: "09:00 – 10:00", subject: "Web Dev‑2" },
-        { time: "11:15 – 12:15", subject: "Data Structures" },
-        { time: "02:00 – 03:00", subject: "Engineering Physics" }
-      ],
-      wed: [
-        { time: "10:00 – 11:00", subject: "Computational Mathematics‑2" },
-        { time: "12:15 – 01:15", subject: "Design Thinking and Prototyping" },
-        { time: "03:00 – 04:00", subject: "Minor Project" }
-      ],
-      thu: [
-        { time: "09:00 – 10:00", subject: "Web Dev‑2" },
-        { time: "11:15 – 12:15", subject: "Data Structures" },
-        { time: "02:00 – 03:00", subject: "Engineering Physics" }
-      ],
-      fri: [
-        { time: "10:00 – 11:00", subject: "Computational Mathematics‑2" },
-        { time: "12:15 – 01:15", subject: "Design Thinking and Prototyping" },
-        { time: "03:00 – 04:00", subject: "Minor Project" }
-      ]
-    };
+        <div id="chatMessages"></div>
 
-    const dateLabel = document.getElementById("dateLabel");
-    const topUserName = document.getElementById("topUserName");
-    const topAvatar = document.getElementById("topAvatar");
-    const profileIntro = document.getElementById("profileIntro");
-    const profileDetails = document.getElementById("profileDetails");
-    const profileOverlay = document.getElementById("profileOverlay");
-    const profileForm = document.getElementById("profileForm");
-    const rollInput = document.getElementById("rollInput");
-    const rollError = document.getElementById("rollError");
-    const nameInput = document.getElementById("nameInput");
-    const mobileInput = document.getElementById("mobileInput");
-    const courseInput = document.getElementById("courseInput");
-    const editProfileBtn = document.getElementById("editProfileBtn");
+        <div id="chatInputArea">
+          <input id="chatInput" placeholder="Ask something..." />
+          <button onclick="sendMessage()">➤</button>
+        </div>
 
-    const calendarMonthLabel = document.getElementById("calendarMonthLabel");
-    const calendarTodayText = document.getElementById("calendarTodayText");
-    const calendarGrid = document.getElementById("calendarGrid");
+      </div>
+    </div>
+    <!-- Chat with AI widget button -->
+    <button id="chatWidgetBtn">
+      Chat with AI
+    </button>
+    <script>
+      // Keys for localStorage
+      const LS_PROFILE_KEY = "krmu_profile";
+      const LS_TASKS_KEY = "krmu_tasks";
+      const LS_CSV_KEY = "krmu_students_csv";
+      let timetableData = {};
+      const dateLabel = document.getElementById("dateLabel");
+      const topUserName = document.getElementById("topUserName");
+      const topAvatar = document.getElementById("topAvatar");
+      const profileIntro = document.getElementById("profileIntro");
+      const profileDetails = document.getElementById("profileDetails");
+      const profileOverlay = document.getElementById("profileOverlay");
+      const profileForm = document.getElementById("profileForm");
+      const rollInput = document.getElementById("rollInput");
+      const rollError = document.getElementById("rollError");
+      const nameInput = document.getElementById("nameInput");
+      const mobileInput = document.getElementById("mobileInput");
+      const courseInput = document.getElementById("courseInput");
+      const editProfileBtn = document.getElementById("editProfileBtn");
 
-    const tasksList = document.getElementById("tasksList");
-    const resetTasksBtn = document.getElementById("resetTasksBtn");
+      const calendarMonthLabel = document.getElementById("calendarMonthLabel");
+      const calendarTodayText = document.getElementById("calendarTodayText");
+      const calendarGrid = document.getElementById("calendarGrid");
 
-    const blurWrapper = document.getElementById("blurWrapper");
+      const tasksList = document.getElementById("tasksList");
+      const resetTasksBtn = document.getElementById("resetTasksBtn");
 
-    // For You cards (modals)
-    const attendanceCard = document.querySelector(".lesson-card.yellow");
-    const reportCardCard = document.querySelector(".lesson-card.pink");
-    const overallPerfCard = document.querySelector(".lesson-card.blue");
+      const blurWrapper = document.getElementById("blurWrapper");
 
-    // --- Helpers ---
-    function getTodayId() {
-      const d = new Date();
-      return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-    }
+      // For You cards (modals)
+      const attendanceCard = document.querySelector(".lesson-card.yellow");
+      const reportCardCard = document.querySelector(".lesson-card.pink");
+      const overallPerfCard = document.querySelector(".lesson-card.blue");
 
-    function initDateLabel() {
-      const now = new Date();
-      const options = { year: "numeric", month: "short", day: "numeric" };
-      dateLabel.textContent = now.toLocaleDateString(undefined, options);
-    }
+      // --- Helpers ---
 
-    function renderTimetableForDay(weekdayKey) {
-      const body = document.querySelector(".timetable tbody");
-      const data = WEEK_SCHEDULE[weekdayKey];
+      async function loadTimetable() {
+        try {
+          const res = await fetch("timetable.json");
+          timetableData = await res.json();
 
-      if (!body || !data) return;
+          // load today's timetable by default
+          const today = new Date().getDay(); // 0=Sun
+          const map = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
 
-      body.innerHTML = "";
-      data.forEach(slot => {
-        const tr = document.createElement("tr");
-        const tdTime = document.createElement("td");
-        const tdSub = document.createElement("td");
-        tdTime.textContent = slot.time;
-        tdSub.textContent = slot.subject;
-        tr.appendChild(tdTime);
-        tr.appendChild(tdSub);
-        body.appendChild(tr);
-      });
-    }
+          const dayKey = map[today] || "mon";
+          renderTimetable(dayKey);
 
-
-    // Live calendar
-    function buildCalendar() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-      const todayDate = now.getDate();
-
-      const monthName = now.toLocaleDateString(undefined, {
-        month: "long",
-        year: "numeric",
-      });
-      calendarMonthLabel.textContent = monthName;
-
-      const todayText = now.toLocaleDateString(undefined, {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-      });
-      calendarTodayText.textContent = "Today · " + todayText;
-
-      calendarGrid.innerHTML = "";
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const div = document.createElement("div");
-        div.className = "calendar-day";
-        if (day === todayDate) {
-          div.classList.add("active");
+        } catch (err) {
+          console.error("Error loading timetable:", err);
         }
-        div.textContent = day;
+      }
 
-        // Attach weekday info
-        const dateObj = new Date(year, month, day);
-        const jsDay = dateObj.getDay(); // 0=Sun ... 6=Sat
-        const dayMap = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
-        const weekdayKey = dayMap[jsDay] || null;
+      function getTodayId() {
+        const d = new Date();
+        return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+      }
 
-        if (weekdayKey) {
-          div.style.cursor = "pointer";
-          div.addEventListener("click", () => {
-            // Update timetable to that day's schedule
-            renderTimetableForDay(weekdayKey);
+      function initDateLabel() {
+        const now = new Date();
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        dateLabel.textContent = now.toLocaleDateString(undefined, options);
+      }
 
-            // If attendance modal is currently open, switch to that day tab
-            const attendanceModal = document.getElementById("attendanceModal");
-            if (attendanceModal.classList.contains("open")) {
-              // Trigger the tab change
-              const targetTab = document.querySelector(
-                '.attendance-tab[data-att-tab="' + weekdayKey + '"]'
-              );
-              const targetPanelKey = weekdayKey;
+      function renderTimetable(dayKey) {
+        const body = document.querySelector(".timetable tbody")
+          || document.getElementById("timetableBody");
 
-              if (targetTab) {
-                // update tabs
-                document
-                  .querySelectorAll(".attendance-tab")
-                  .forEach(t => t.classList.remove("active"));
-                targetTab.classList.add("active");
+        const data = timetableData[dayKey];
 
-                // update panels
-                document
-                  .querySelectorAll(".attendance-panel")
-                  .forEach(panel => {
-                    panel.style.display =
-                      panel.dataset.attPanel === targetPanelKey ? "block" : "none";
-                  });
+        if (!body || !data) return;
+
+        body.innerHTML = "";
+
+        data.forEach(slot => {
+          const tr = document.createElement("tr");
+
+          const tdTime = document.createElement("td");
+          const tdSub = document.createElement("td");
+
+          tdTime.textContent = slot.time;
+          tdSub.textContent = slot.subject;
+
+          tr.appendChild(tdTime);
+          tr.appendChild(tdSub);
+
+          body.appendChild(tr);
+        });
+      }
+
+
+      // Live calendar
+      function buildCalendar() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const todayDate = now.getDate();
+
+        const monthName = now.toLocaleDateString(undefined, {
+          month: "long",
+          year: "numeric",
+        });
+        calendarMonthLabel.textContent = monthName;
+
+        const todayText = now.toLocaleDateString(undefined, {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+        });
+        calendarTodayText.textContent = "Today · " + todayText;
+
+        calendarGrid.innerHTML = "";
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const div = document.createElement("div");
+          div.className = "calendar-day";
+          if (day === todayDate) {
+            div.classList.add("active");
+          }
+          div.textContent = day;
+
+          // Attach weekday info
+          const dateObj = new Date(year, month, day);
+          const jsDay = dateObj.getDay(); // 0=Sun ... 6=Sat
+          const dayMap = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
+          const weekdayKey = dayMap[jsDay] || null;
+
+          if (weekdayKey) {
+            div.style.cursor = "pointer";
+            div.addEventListener("click", () => {
+              // Update timetable to that day's schedule
+              renderTimetable(weekdayKey);
+
+              // If attendance modal is currently open, switch to that day tab
+              const attendanceModal = document.getElementById("attendanceModal");
+              if (attendanceModal.classList.contains("open")) {
+                // Trigger the tab change
+                const targetTab = document.querySelector(
+                  '.attendance-tab[data-att-tab="' + weekdayKey + '"]'
+                );
+                const targetPanelKey = weekdayKey;
+
+                if (targetTab) {
+                  // update tabs
+                  document
+                    .querySelectorAll(".attendance-tab")
+                    .forEach(t => t.classList.remove("active"));
+                  targetTab.classList.add("active");
+
+                  // update panels
+                  document
+                    .querySelectorAll(".attendance-panel")
+                    .forEach(panel => {
+                      panel.style.display =
+                        panel.dataset.attPanel === targetPanelKey ? "block" : "none";
+                    });
+                }
               }
-            }
-          });
+            });
+          }
+
+          calendarGrid.appendChild(div);
         }
 
-        calendarGrid.appendChild(div);
       }
 
-    }
-
-    // Profile / account
-    function loadProfile() {
-      const raw = localStorage.getItem(LS_PROFILE_KEY);
-      if (!raw) {
-        profileOverlay.style.display = "flex";
-        return;
-      }
-      const p = JSON.parse(raw);
-      applyProfileToUI(p);
-    }
-
-    function applyProfileToUI(p) {
-      topUserName.textContent = p.name;
-      const initials = p.name
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-      topAvatar.textContent = initials || "ST";
-
-      profileIntro.textContent =
-        "Hi " +
-        p.name +
-        ", you have completed " +
-        "70% of your weekly targets. Keep learning with us like this.";
-      profileDetails.textContent =
-        "Email: " +
-        p.email +
-        ", Mobile: " +
-        p.mobile +
-        ", Course: " +
-        p.course +
-        ".";
-    }
-
-    function appendProfileToCsv(p) {
-      let csv = localStorage.getItem(LS_CSV_KEY);
-      if (!csv) {
-        csv = "roll,email,name,mobile,course\n";
-      }
-      const row =
-        [p.roll, p.email, p.name, p.mobile, p.course]
-          .map((v) => '"' + String(v).replace(/"/g, '""') + '"')
-          .join(",") + "\n";
-      csv += row;
-      localStorage.setItem(LS_CSV_KEY, csv);
-    }
-
-    profileForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      const roll = rollInput.value.trim();
-      if (!/^\d{10}$/.test(roll)) {
-        rollError.style.display = "block";
-        return;
-      }
-      rollError.style.display = "none";
-
-      const name = nameInput.value.trim() || "Student";
-      const mobile = mobileInput.value.trim();
-      const course = courseInput.value.trim();
-      const email = roll + "@krmu.edu.in";
-
-      const profile = { roll, email, name, mobile, course };
-      localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(profile));
-      appendProfileToCsv(profile);
-      applyProfileToUI(profile);
-      profileOverlay.style.display = "none";
-    });
-
-    editProfileBtn.addEventListener("click", function () {
-      const raw = localStorage.getItem(LS_PROFILE_KEY);
-      if (raw) {
+      // Profile / account
+      function loadProfile() {
+        const raw = localStorage.getItem(LS_PROFILE_KEY);
+        if (!raw) {
+          profileOverlay.style.display = "flex";
+          return;
+        }
         const p = JSON.parse(raw);
-        rollInput.value = p.roll;
-        nameInput.value = p.name;
-        mobileInput.value = p.mobile;
-        courseInput.value = p.course;
+        applyProfileToUI(p);
       }
-      profileOverlay.style.display = "flex";
-    });
 
-    // Nav active state
-    document.querySelectorAll(".nav-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        document
-          .querySelectorAll(".nav-item")
-          .forEach((el) => el.classList.remove("active"));
-        item.classList.add("active");
+      function applyProfileToUI(p) {
+        topUserName.textContent = p.name;
+        const initials = p.name
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
+        topAvatar.textContent = initials || "ST";
+
+        profileIntro.textContent =
+          "Hi " +
+          p.name +
+          ", you have completed " +
+          "70% of your weekly targets. Keep learning with us like this.";
+        profileDetails.textContent =
+          "Email: " +
+          p.email +
+          ", Mobile: " +
+          p.mobile +
+          ", Course: " +
+          p.course +
+          ".";
+      }
+
+      function appendProfileToCsv(p) {
+        let csv = localStorage.getItem(LS_CSV_KEY);
+        if (!csv) {
+          csv = "roll,email,name,mobile,course\n";
+        }
+        const row =
+          [p.roll, p.email, p.name, p.mobile, p.course]
+            .map((v) => '"' + String(v).replace(/"/g, '""') + '"')
+            .join(",") + "\n";
+        csv += row;
+        localStorage.setItem(LS_CSV_KEY, csv);
+      }
+
+      profileForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const roll = rollInput.value.trim();
+        if (!/^\d{10}$/.test(roll)) {
+          rollError.style.display = "block";
+          return;
+        }
+        rollError.style.display = "none";
+
+        const name = nameInput.value.trim() || "Student";
+        const mobile = mobileInput.value.trim();
+        const course = courseInput.value.trim();
+        const email = roll + "@krmu.edu.in";
+
+        const profile = { roll, email, name, mobile, course };
+        localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(profile));
+        appendProfileToCsv(profile);
+        applyProfileToUI(profile);
+        profileOverlay.style.display = "none";
       });
-    });
 
-    // Tasks
-    const defaultTasks = [
-      { id: "upload-assignment", label: "Upload Assignment", color: "orange" },
-      { id: "study-quiz", label: "Study for Quiz", color: "green" },
-      { id: "paragraph-corrections", label: "Paragraph Corrections", color: "purple" },
-      { id: "spell-check", label: "Spell Check English", color: "red" },
-    ];
+      editProfileBtn.addEventListener("click", function () {
+        const raw = localStorage.getItem(LS_PROFILE_KEY);
+        if (raw) {
+          const p = JSON.parse(raw);
+          rollInput.value = p.roll;
+          nameInput.value = p.name;
+          mobileInput.value = p.mobile;
+          courseInput.value = p.course;
+        }
+        profileOverlay.style.display = "flex";
+      });
 
-    function loadTasks() {
-      const todayId = getTodayId();
-      const raw = localStorage.getItem(LS_TASKS_KEY);
-      let tasksState = raw ? JSON.parse(raw) : {};
-      if (!tasksState[todayId]) {
+      // Nav active state
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((el) => el.classList.remove("active"));
+          item.classList.add("active");
+        });
+      });
+
+      // Tasks
+      const defaultTasks = [
+        { id: "upload-assignment", label: "Upload Assignment", color: "orange" },
+        { id: "study-quiz", label: "Study for Quiz", color: "green" },
+        { id: "paragraph-corrections", label: "Paragraph Corrections", color: "purple" },
+        { id: "spell-check", label: "Spell Check English", color: "red" },
+      ];
+
+      function loadTasks() {
+        const todayId = getTodayId();
+        const raw = localStorage.getItem(LS_TASKS_KEY);
+        let tasksState = raw ? JSON.parse(raw) : {};
+        if (!tasksState[todayId]) {
+          tasksState[todayId] = defaultTasks.map((t) => ({
+            ...t,
+            done: false,
+          }));
+          localStorage.setItem(LS_TASKS_KEY, JSON.stringify(tasksState));
+        }
+        renderTasks(tasksState[todayId]);
+      }
+
+      function renderTasks(tasks) {
+        tasksList.innerHTML = "";
+        tasks.forEach((task) => {
+          const row = document.createElement("div");
+          row.className = "task-item" + (task.done ? " done" : "");
+          row.dataset.taskId = task.id;
+
+          const checkbox = document.createElement("div");
+          checkbox.className = "task-checkbox";
+          checkbox.textContent = task.done ? "✓" : "";
+
+          const dot = document.createElement("div");
+          dot.className = "task-dot " + task.color;
+
+          const label = document.createElement("span");
+          label.textContent = task.label;
+
+          row.appendChild(checkbox);
+          row.appendChild(dot);
+          row.appendChild(label);
+
+          row.addEventListener("click", () => toggleTask(task.id));
+
+          tasksList.appendChild(row);
+        });
+      }
+
+      function toggleTask(taskId) {
+        const todayId = getTodayId();
+        const raw = localStorage.getItem(LS_TASKS_KEY);
+        if (!raw) return;
+        const tasksState = JSON.parse(raw);
+        const list = tasksState[todayId] || [];
+        const updated = list.map((t) =>
+          t.id === taskId ? { ...t, done: !t.done } : t
+        );
+        tasksState[todayId] = updated;
+        localStorage.setItem(LS_TASKS_KEY, JSON.stringify(tasksState));
+        renderTasks(updated);
+      }
+
+      resetTasksBtn.addEventListener("click", () => {
+        const todayId = getTodayId();
+        const raw = localStorage.getItem(LS_TASKS_KEY);
+        let tasksState = raw ? JSON.parse(raw) : {};
         tasksState[todayId] = defaultTasks.map((t) => ({
           ...t,
           done: false,
         }));
         localStorage.setItem(LS_TASKS_KEY, JSON.stringify(tasksState));
+        renderTasks(tasksState[todayId]);
+      });
+
+      // Modals + blur
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+        blurWrapper.classList.add("blurred");
       }
-      renderTasks(tasksState[todayId]);
-    }
 
-    function renderTasks(tasks) {
-      tasksList.innerHTML = "";
-      tasks.forEach((task) => {
-        const row = document.createElement("div");
-        row.className = "task-item" + (task.done ? " done" : "");
-        row.dataset.taskId = task.id;
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+        blurWrapper.classList.remove("blurred");
+      }
 
-        const checkbox = document.createElement("div");
-        checkbox.className = "task-checkbox";
-        checkbox.textContent = task.done ? "✓" : "";
+      attendanceCard.addEventListener("click", () => openModal("attendanceModal"));
+      reportCardCard.addEventListener("click", () => openModal("reportCardModal"));
+      overallPerfCard.addEventListener("click", () => openModal("overallPerfModal"));
 
-        const dot = document.createElement("div");
-        dot.className = "task-dot " + task.color;
-
-        const label = document.createElement("span");
-        label.textContent = task.label;
-
-        row.appendChild(checkbox);
-        row.appendChild(dot);
-        row.appendChild(label);
-
-        row.addEventListener("click", () => toggleTask(task.id));
-
-        tasksList.appendChild(row);
+      document.querySelectorAll(".dash-modal-close").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.closeModal;
+          closeModal(id);
+        });
       });
-    }
 
-    function toggleTask(taskId) {
-      const todayId = getTodayId();
-      const raw = localStorage.getItem(LS_TASKS_KEY);
-      if (!raw) return;
-      const tasksState = JSON.parse(raw);
-      const list = tasksState[todayId] || [];
-      const updated = list.map((t) =>
-        t.id === taskId ? { ...t, done: !t.done } : t
-      );
-      tasksState[todayId] = updated;
-      localStorage.setItem(LS_TASKS_KEY, JSON.stringify(tasksState));
-      renderTasks(updated);
-    }
-
-    resetTasksBtn.addEventListener("click", () => {
-      const todayId = getTodayId();
-      const raw = localStorage.getItem(LS_TASKS_KEY);
-      let tasksState = raw ? JSON.parse(raw) : {};
-      tasksState[todayId] = defaultTasks.map((t) => ({
-        ...t,
-        done: false,
-      }));
-      localStorage.setItem(LS_TASKS_KEY, JSON.stringify(tasksState));
-      renderTasks(tasksState[todayId]);
-    });
-
-    // Modals + blur
-    function openModal(id) {
-      document.getElementById(id).classList.add("open");
-      blurWrapper.classList.add("blurred");
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove("open");
-      blurWrapper.classList.remove("blurred");
-    }
-
-    attendanceCard.addEventListener("click", () => openModal("attendanceModal"));
-    reportCardCard.addEventListener("click", () => openModal("reportCardModal"));
-    overallPerfCard.addEventListener("click", () => openModal("overallPerfModal"));
-
-    document.querySelectorAll(".dash-modal-close").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.closeModal;
-        closeModal(id);
+      document.querySelectorAll(".dash-modal").forEach((modal) => {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.classList.remove("open");
+            blurWrapper.classList.remove("blurred");
+          }
+        });
       });
-    });
 
-    document.querySelectorAll(".dash-modal").forEach((modal) => {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.classList.remove("open");
-          blurWrapper.classList.remove("blurred");
-        }
-      });
-    });
+      // Charts
+      let gradesData = {};
 
-    // Charts
-    function initCharts() {
-      const rcCanvas = document.getElementById("reportCardChart");
-      if (rcCanvas) {
-        const rcCtx = rcCanvas.getContext("2d");
-        new Chart(rcCtx, {
+      async function loadGrades() {
+        const res = await fetch("grades.json");
+        gradesData = await res.json();
+        renderGradesChart();
+      }
+
+      function renderGradesChart() {
+        const ctx = document.getElementById("reportCardChart").getContext("2d");
+
+        new Chart(ctx, {
           type: "bar",
           data: {
-            labels: [
-              "Web Dev‑2",
-              "Comp Math‑2",
-              "DSA",
-              "Design Thinking",
-              "Physics",
-              "Minor Project",
-            ],
-            datasets: [
-              {
-                label: "Grade (%)",
-                data: [85, 78, 92, 88, 80, 95],
-                backgroundColor: "#1a73e8",
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-              },
-            },
-          },
+            labels: gradesData.subjects,
+            datasets: [{
+              data: gradesData.marks
+            }]
+          }
         });
       }
 
-      const opCanvas = document.getElementById("overallPerfChart");
-      if (opCanvas) {
-        const opCtx = opCanvas.getContext("2d");
-        new Chart(opCtx, {
-          type: "line",
-          data: {
-            labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-            datasets: [
-              {
-                label: "Performance Score",
-                data: [72, 80, 85, 90],
-                borderColor: "#0d47a1",
-                backgroundColor: "rgba(13, 71, 161, 0.1)",
-                fill: true,
-                tension: 0.3,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: false },
+      function renderOverallPerfChart() {
+        const opCanvas = document.getElementById("overallPerfChart");
+        if (opCanvas) {
+          const opCtx = opCanvas.getContext("2d");
+          new Chart(opCtx, {
+            type: "line",
+            data: {
+              labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+              datasets: [
+                {
+                  label: "Performance Score",
+                  data: [72, 80, 85, 90],
+                  borderColor: "#0d47a1",
+                  backgroundColor: "rgba(13, 71, 161, 0.1)",
+                  fill: true,
+                  tension: 0.3,
+                },
+              ],
             },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  max: 100,
+                },
               },
             },
-          },
-        });
+          });
+        }
       }
-    }
+      function initCharts() {
+        loadGrades();
+        renderOverallPerfChart();
+      }
 
-    // Init
-    initDateLabel();
-    buildCalendar();
-    loadProfile();
-    loadTasks();
-    window.addEventListener("load", initCharts);
-    // Attendance tab logic
-    const attTabs = document.querySelectorAll(".attendance-tab");
-    const attPanels = document.querySelectorAll(".attendance-panel");
+      // Init
+      initDateLabel();
+      buildCalendar();
+      loadProfile();
+      loadTasks();
+      loadTimetable();
+      window.addEventListener("load", () => {
+        initCharts();
+      });
+      // Attendance tab logic
+      const attTabs = document.querySelectorAll(".attendance-tab");
+      const attPanels = document.querySelectorAll(".attendance-panel");
 
-    attTabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        const target = tab.dataset.attTab;
+      attTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.attTab;
 
-        attTabs.forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
+          attTabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
 
-        attPanels.forEach(panel => {
-          panel.style.display =
-            panel.dataset.attPanel === target ? "block" : "none";
+          attPanels.forEach(panel => {
+            panel.style.display =
+              panel.dataset.attPanel === target ? "block" : "none";
+          });
         });
       });
-    });
+      async function sendMessage() {
+        const input = document.getElementById("chatInput");
+        const messages = document.getElementById("chatMessages");
 
-  </script>
+        const userText = input.value.trim();
+        if (!userText) return;
+
+        // show user message
+        messages.innerHTML += `<div><b>You:</b> ${userText}</div>`;
+
+        input.value = "";
+
+        try {
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userText })
+          });
+
+          const data = await res.json();
+
+          messages.innerHTML += `<div><b>AI:</b> ${data.reply}</div>`;
+          messages.scrollTop = messages.scrollHeight;
+
+        } catch (err) {
+          messages.innerHTML += `<div><b>AI:</b> Server error</div>`;
+        }
+      }
+      const chatbotOverlay = document.getElementById("chatbotOverlay");
+      const chatBtn = document.getElementById("chatWidgetBtn");
+
+      chatBtn.addEventListener("click", () => {
+        chatbotOverlay.style.display = "flex";
+      });
+
+      function closeChat() {
+        chatbotOverlay.style.display = "none";
+      }
+    </script>
 </body>
 
 </html>
