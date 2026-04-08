@@ -934,6 +934,177 @@
       border-radius: 999px;
       cursor: pointer;
     }
+  
+.open-btn {position:fixed;
+  bottom:90px;
+  right:20px;
+
+  padding: 12px 22px;
+  background: #117036;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+/* Modal background */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card */
+.modal-box {
+  width: 90%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Header */
+.modal-header {
+  background: linear-gradient(135deg, #2b6df6, #4e8cff);
+  color: white;
+  padding: 20px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  position: relative;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.modal-header p {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Body */
+.modal-body {
+  padding: 20px;
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Inputs */
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #2b6df6;
+  outline: none;
+}
+
+/* Textarea */
+textarea {
+  height: 90px;
+  resize: none;
+}
+
+/* Small text */
+.small-text {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+}
+
+/* Stars */
+.stars {
+  margin-top: 5px;
+}
+
+.stars span {
+  font-size: 26px;
+  cursor: pointer;
+  color: #ddd;
+  transition: 0.2s;
+}
+
+.stars span.active {
+  color: gold;
+}
+
+/* Radio buttons FIX */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: normal;
+  background: #f5f7ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Button */
+.submit-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2b6df6, #4e8cff);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  transform: scale(1.02);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
   </style>
 </head>
 
@@ -1283,6 +1454,78 @@
 
       </div>
     </div>
+    <!-- Open Button -->
+<button class="open-btn" onclick="openModal()">Give Feedback</button>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-box">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Share Your Feedback</h2>
+      <p>Help us improve your dashboard experience</p>
+      <span class="close" onclick="closeModal()">✖</span>
+    </div>
+
+    <!-- Form -->
+    <div class="modal-body">
+
+      <label>Your Name (Optional)</label>
+      <input type="text" id="name" placeholder="Enter your name">
+
+      <label>Email (Optional)</label>
+      <input type="email" id="email" placeholder="Enter your email">
+
+      <!-- Rating -->
+      <label>Overall Experience</label>
+      <p class="small-text">How would you rate your overall experience?</p>
+
+      <div class="stars">
+        <span onclick="setRating(1)">★</span>
+        <span onclick="setRating(2)">★</span>
+        <span onclick="setRating(3)">★</span>
+        <span onclick="setRating(4)">★</span>
+        <span onclick="setRating(5)">★</span>
+      </div>
+
+      <!-- Ease -->
+      <label>Ease of Use</label>
+      <select id="ease">
+        <option value="">Select an option</option>
+        <option>Very Easy</option>
+        <option>Easy</option>
+        <option>Average</option>
+        <option>Difficult</option>
+      </select>
+
+      <!-- Satisfaction -->
+      <label>How satisfied are you?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="satisfaction" value="Very Satisfied"> Very Satisfied</label>
+        <label><input type="radio" name="satisfaction" value="Satisfied"> Satisfied</label>
+        <label><input type="radio" name="satisfaction" value="Neutral"> Neutral</label>
+        <label><input type="radio" name="satisfaction" value="Unsatisfied"> Unsatisfied</label>
+      </div>
+
+      <!-- Feedback -->
+      <label>Your Feedback / Suggestions</label>
+      <textarea id="feedback" placeholder="What do you like or what can we improve?"></textarea>
+
+      <!-- Recommendation -->
+      <label>Would you recommend this dashboard?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="recommend" value="Yes"> Yes</label>
+        <label><input type="radio" name="recommend" value="Maybe"> Maybe</label>
+        <label><input type="radio" name="recommend" value="No"> No</label>
+      </div>
+
+      <!-- Submit -->
+      <button class="submit-btn" onclick="submitFeedback()">Submit Feedback</button>
+
+    </div>
+  </div>
+</div>
     <!-- Chat with AI widget button -->
     <button id="chatWidgetBtn">
       Chat with AI
@@ -1782,6 +2025,46 @@
       function closeChat() {
         chatbotOverlay.style.display = "none";
       }
+      let rating = 0;
+
+function openModal() {
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function setRating(value) {
+  rating = value;
+  let stars = document.querySelectorAll(".stars span");
+  stars.forEach((star, index) => {
+    star.classList.toggle("active", index < value);
+  });
+}
+
+function submitFeedback() {
+  const satisfaction = document.querySelector('input[name="satisfaction"]:checked');
+  const recommend = document.querySelector('input[name="recommend"]:checked');
+
+  const data = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    rating: rating,
+    ease: document.getElementById("ease").value,
+    satisfaction: satisfaction ? satisfaction.value : "",
+    feedback: document.getElementById("feedback").value,
+    recommend: recommend ? recommend.value : "",
+    date: new Date().toLocaleString()
+  };
+
+  let allData = JSON.parse(localStorage.getItem("feedbackData")) || [];
+  allData.push(data);
+  localStorage.setItem("feedbackData", JSON.stringify(allData));
+
+  alert("Feedback submitted successfully!");
+  closeModal();
+}
     </script>
 </body>
 
