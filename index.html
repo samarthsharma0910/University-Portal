@@ -641,137 +641,101 @@
         </div>
     </div>
 
-   <script>
-  const signInForm = document.querySelector(".sign-in-form");
-  const signUpForm = document.querySelector(".sign-up-form");
-  const sign_in_btn = document.querySelector("#sign-in-btn");
-  const sign_up_btn = document.querySelector("#sign-up-btn");
-  const container = document.querySelector(".container");
+    <script>
+        const signInForm = document.querySelector(".sign-in-form");
+        const signUpForm = document.querySelector(".sign-up-form");
+        const sign_in_btn = document.querySelector("#sign-in-btn");
+        const sign_up_btn = document.querySelector("#sign-up-btn");
+        const container = document.querySelector(".container");
+        // Toggle forms
+        sign_up_btn.addEventListener("click", () => {
+            container.classList.add("sign-up-mode");
+        });
+        sign_in_btn.addEventListener("click", () => {
+            container.classList.remove("sign-up-mode");
+        });
 
-  // Toggle forms
-  sign_up_btn.addEventListener("click", () => {
-    container.classList.add("sign-up-mode");
-  });
-  sign_in_btn.addEventListener("click", () => {
-    container.classList.remove("sign-up-mode");
-  });
+        // === SIGNUP FORM HANDLER ===
+        // === SIGNUP FORM HANDLER ===
+        if (signUpForm) {
+            signUpForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
 
-  // ===== FRONTEND AUTH USING localStorage =====
-  // localStorage keys:
-  //   "users"       -> JSON array of { username, email, password, role }
-  //   "currentUser" -> JSON object of logged-in user
+                const username = signUpForm.querySelector('input[type="text"]').value.trim();
+                const email = signUpForm.querySelector('input[type="email"]').value.trim();
+                const password = signUpForm.querySelector('input[type="password"]').value.trim();
+                const role = document.querySelector("#signup-role").value;  // NEW
 
-  function getUsers() {
-    try {
-      const raw = localStorage.getItem("users");
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      console.error("Error reading users from localStorage", e);
-      return [];
-    }
-  }
+                if (!username || !email || !password || !role) {
+                    alert("Please fill all fields");
+                    return;
+                }
 
-  function saveUsers(users) {
-    localStorage.setItem("users", JSON.stringify(users));
-  }
+                try {
+                    const response = await fetch("/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({ username, email, password, role }) // send role
+                    });
 
-  function findUser(username) {
-    const users = getUsers();
-    return users.find((u) => u.username === username);
-  }
+                    const data = await response.json();
+                    console.log("Signup response:", data);
 
-  // === SIGNUP FORM HANDLER (FRONTEND ONLY) ===
-  if (signUpForm) {
-    signUpForm.addEventListener("submit", (e) => {
-      e.preventDefault();
+                    if (data.success) {
+                        alert("Account created successfully!");
+                        window.location.href = data.redirect || "/dashboard.html";
+                    } else {
+                        alert(data.message || "Signup failed");
+                    }
+                } catch (err) {
+                    console.error("Signup error:", err);
+                    alert("Server error during signup");
+                }
+            });
+        }
 
-      const username = signUpForm.querySelector('input[type="text"]').value.trim();
-      const email = signUpForm.querySelector('input[type="email"]').value.trim();
-      const password = signUpForm.querySelector('input[type="password"]').value.trim();
-      const role = document.querySelector("#signup-role").value;
+        // === SIGNIN FORM HANDLER ===
+        // === SIGNIN FORM HANDLER ===
+        if (signInForm) {
+            signInForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
 
-      if (!username || !email || !password || !role) {
-        alert("Please fill all fields");
-        return;
-      }
+                const username = signInForm.querySelector('input[type="text"]').value.trim();
+                const password = signInForm.querySelector('input[type="password"]').value.trim();
+                const role = document.querySelector("#role").value;  // NEW
 
-      const users = getUsers();
-      if (users.find((u) => u.username === username)) {
-        alert("Username already exists");
-        return;
-      }
+                if (!username || !password || !role) {
+                    alert("Please enter username, password and role");
+                    return;
+                }
 
-      const newUser = { username, email, password, role };
-      users.push(newUser);
-      saveUsers(users);
+                try {
+                    const response = await fetch("/signin", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({ username, password, role }) // include role
+                    });
 
-      // Save current user
-      localStorage.setItem("currentUser", JSON.stringify(newUser));
+                    const data = await response.json();
+                    console.log("Signin response:", data);
 
-      alert("Account created successfully!");
-
-      // Redirect based on role
-      if (role === "admin") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
-    });
-  }
-
-  // === SIGNIN FORM HANDLER (FRONTEND ONLY) ===
-  if (signInForm) {
-    signInForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const username = signInForm.querySelector('input[type="text"]').value.trim();
-      const password = signInForm.querySelector('input[type="password"]').value.trim();
-      const role = document.querySelector("#role").value;
-
-      if (!username || !password || !role) {
-        alert("Please enter username, password and role");
-        return;
-      }
-
-      // Optional: hardcoded admin login
-      if (role === "admin" && username === "admin" && password === "admin123") {
-        const adminUser = { username: "admin", email: "admin@example.com", role: "admin" };
-        localStorage.setItem("currentUser", JSON.stringify(adminUser));
-        window.location.href = "admin.html";
-        return;
-      }
-
-      const user = findUser(username);
-
-      if (!user || user.password !== password) {
-        alert("Invalid credentials");
-        return;
-      }
-
-      if (user.role !== role) {
-        alert(`You registered as "${user.role}", not "${role}".`);
-        return;
-      }
-
-      // Save current user
-      localStorage.setItem("currentUser", JSON.stringify(user));
-
-      if (role === "admin") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
-    });
-  }
-
-  // OPTIONAL: logout function for other pages
-  // On dashboard.html/admin.html you can add a logout button:
-  // <button onclick="logout()">Logout</button>
-  window.logout = function () {
-    localStorage.removeItem("currentUser");
-    window.location.href = "index.html";
-  };
-</script>
+                    if (data.success) {
+                        window.location.href = data.redirect || "/dashboard.html";
+                    } else {
+                        alert(data.message || "Login failed");
+                    }
+                } catch (err) {
+                    console.error("Signin error:", err);
+                    alert("Server error during login");
+                }
+            });
+        }
+    
+    </script>
 
 </body>
 
