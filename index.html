@@ -560,6 +560,13 @@
                         <i class="fas fa-lock"></i>
                         <input type="password" placeholder="Password" />
                     </div>
+                    <div class="input-field">
+                        <i class="fas fa-user-shield"></i>
+                        <select id="role" style="border:none; background:transparent; outline:none; font-weight:600;">
+                            <option value="student">Student</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
                     <input type="submit" value="Login" class="btn solid" />
                     <p class="social-text">Or Sign in with social platforms</p>
                     <div class="social-media">
@@ -584,6 +591,17 @@
                         <i class="fas fa-lock"></i>
                         <input type="password" placeholder="Password" />
                     </div>
+
+                    <!-- NEW: Role dropdown for signup -->
+                    <div class="input-field">
+                        <i class="fas fa-user-shield"></i>
+                        <select id="signup-role"
+                            style="border:none; background:transparent; outline:none; font-weight:600;">
+                            <option value="student">Student</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+
                     <input type="submit" class="btn" value="Sign up" />
                     <p class="social-text">Or Sign up with social platforms</p>
                     <div class="social-media">
@@ -626,11 +644,9 @@
     <script>
         const signInForm = document.querySelector(".sign-in-form");
         const signUpForm = document.querySelector(".sign-up-form");
-
         const sign_in_btn = document.querySelector("#sign-in-btn");
         const sign_up_btn = document.querySelector("#sign-up-btn");
         const container = document.querySelector(".container");
-
         // Toggle forms
         sign_up_btn.addEventListener("click", () => {
             container.classList.add("sign-up-mode");
@@ -640,6 +656,7 @@
         });
 
         // === SIGNUP FORM HANDLER ===
+        // === SIGNUP FORM HANDLER ===
         if (signUpForm) {
             signUpForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
@@ -647,8 +664,9 @@
                 const username = signUpForm.querySelector('input[type="text"]').value.trim();
                 const email = signUpForm.querySelector('input[type="email"]').value.trim();
                 const password = signUpForm.querySelector('input[type="password"]').value.trim();
+                const role = document.querySelector("#signup-role").value;  // NEW
 
-                if (!username || !email || !password) {
+                if (!username || !email || !password || !role) {
                     alert("Please fill all fields");
                     return;
                 }
@@ -659,7 +677,7 @@
                         headers: {
                             "Content-Type": "application/x-www-form-urlencoded",
                         },
-                        body: new URLSearchParams({ username, email, password })
+                        body: new URLSearchParams({ username, email, password, role }) // send role
                     });
 
                     const data = await response.json();
@@ -679,15 +697,17 @@
         }
 
         // === SIGNIN FORM HANDLER ===
+        // === SIGNIN FORM HANDLER ===
         if (signInForm) {
             signInForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
 
                 const username = signInForm.querySelector('input[type="text"]').value.trim();
                 const password = signInForm.querySelector('input[type="password"]').value.trim();
+                const role = document.querySelector("#role").value;  // NEW
 
-                if (!username || !password) {
-                    alert("Please enter username and password");
+                if (!username || !password || !role) {
+                    alert("Please enter username, password and role");
                     return;
                 }
 
@@ -697,7 +717,7 @@
                         headers: {
                             "Content-Type": "application/x-www-form-urlencoded",
                         },
-                        body: new URLSearchParams({ username, password })
+                        body: new URLSearchParams({ username, password, role }) // include role
                     });
 
                     const data = await response.json();
